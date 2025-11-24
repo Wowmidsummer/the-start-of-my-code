@@ -25,18 +25,18 @@
                 radial-gradient(circle at 20% 20%, rgba(255, 122, 24, 0.08), transparent 45%), var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding: 26px 18px 40px;
+            padding: 32px 22px 44px;
             letter-spacing: 0.3px;
         }
         h1, h2 { margin: 0; }
         h1 { font-size: 18px; }
         h2 { font-size: 14px; }
         .container {
-            max-width: 1120px;
+            max-width: 1380px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 20px;
+            grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
+            gap: 24px;
         }
         @media (max-width: 960px) {
             .container { grid-template-columns: 1fr; }
@@ -86,7 +86,7 @@
             transform: translateY(-2px);
         }
         .timer {
-            font-size: 56px;
+            font-size: 64px;
             text-align: center;
             margin: 18px 0 8px;
             letter-spacing: 3px;
@@ -181,6 +181,15 @@
             border-bottom: 2px solid #1f1f1f;
         }
         th { color: var(--muted); font-weight: 700; letter-spacing: 1px; }
+        td input {
+            width: 100%;
+            background: #0c0c0c;
+            border: 2px solid #222;
+            color: var(--text);
+            padding: 8px 9px 7px;
+            font-size: 10px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
         .progress {
             height: 10px;
             border: 2px solid #1f1f1f;
@@ -209,6 +218,17 @@
             margin-top: 10px;
             text-align: right;
             letter-spacing: 0.5px;
+        }
+        .chart-shell {
+            margin-top: 4px;
+            border: 2px solid #1f1f1f;
+            background: #0c0c0c;
+            box-shadow: 0 0 0 2px #000 inset, 4px 4px 0 rgba(255,122,24,0.15);
+            padding: 10px;
+        }
+        #chart {
+            width: 100%;
+            height: 320px;
         }
     </style>
 </head>
@@ -261,10 +281,14 @@
                 <h2>任务统计</h2>
                 <div class="date" id="summaryTotal">今日累计 00:00:00</div>
             </div>
+            <div class="chart-shell">
+                <div id="chart"></div>
+            </div>
             <div id="taskTable"></div>
         </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <script>
         const tabs = document.querySelectorAll('.tab');
         const modeButtons = document.querySelectorAll('#pomodoroModes button');
@@ -277,6 +301,7 @@
         const taskInput = document.getElementById('taskInput');
         const summaryTotal = document.getElementById('summaryTotal');
         const taskTable = document.getElementById('taskTable');
+        const chartContainer = document.getElementById('chart');
         const lengthInputs = {
             focus: document.getElementById('focusLength'),
             short: document.getElementById('shortLength'),
@@ -332,6 +357,71 @@
             renderTable();
         }
 
+        function renameTask(oldName, newName) {
+            const trimmed = (newName || '').trim() || '杂项';
+            const data = readData();
+            if (!data.tasks[oldName]) return;
+            const seconds = data.tasks[oldName];
+            delete data.tasks[oldName];
+            data.tasks[trimmed] = (data.tasks[trimmed] || 0) + seconds;
+            writeData(data);
+            renderTable();
+        }
+
+        let chartInstance = null;
+
+        function renderChart(entries, total) {
+            if (!chartContainer) return;
+            if (!chartInstance) {
+                chartInstance = echarts.init(chartContainer);
+                window.addEventListener('resize', () => chartInstance && chartInstance.resize());
+            }
+            if (!entries.length) {
+                chartInstance.clear();
+                chartInstance.setOption({
+                    title: {
+                        text: '暂无数据',
+                        left: 'center',
+                        top: 'middle',
+                        textStyle: { color: '#6a6a6a', fontSize: 12, fontFamily: 'Share Tech Mono' },
+                    },
+                });
+                return;
+            }
+            const data = entries.map(([name, sec]) => ({ value: sec, name }));
+            chartInstance.setOption({
+                backgroundColor: '#0c0c0c',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: ({ name, value, percent }) => `${name}: ${fmtTime(value)} (${Math.round(percent)}%)`,
+                },
+                legend: {
+                    top: 10,
+                    textStyle: { color: '#fdf4dd', fontFamily: 'Share Tech Mono', fontSize: 10 },
+                },
+                series: [{
+                    name: '今日分布',
+                    type: 'pie',
+                    radius: ['45%', '70%'],
+                    center: ['50%', '55%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderColor: '#0c0c0c',
+                        borderWidth: 3,
+                    },
+                    label: {
+                        formatter: '{b}\n{d}% ',
+                        color: '#fdf4dd',
+                        fontSize: 10,
+                        fontFamily: 'Share Tech Mono',
+                    },
+                    labelLine: { show: true, lineStyle: { color: '#ffb52c' } },
+                    data,
+                    color: ['#ff7a18', '#faae2b', '#5e6ad2', '#35c98d', '#2b2b2b', '#f45c43', '#46c7ff'],
+                }],
+            });
+        }
+
         function renderTable() {
             const data = readData();
             const entries = Object.entries(data.tasks).sort((a, b) => b[1] - a[1]);
@@ -339,13 +429,14 @@
             summaryTotal.textContent = `今日累计 ${fmtTime(total)}`;
             if (!entries.length) {
                 taskTable.innerHTML = '<p style="color: var(--muted);">还没有记录，开始一次专注或正计时吧。</p>';
+                renderChart([], total);
                 return;
             }
             const rows = entries.map(([name, sec]) => {
                 const percent = total ? Math.round((sec / total) * 100) : 0;
                 return `
-                    <tr>
-                        <td>${name}</td>
+                    <tr data-name="${name}">
+                        <td><input class="task-name-input" data-name="${name}" value="${name}" aria-label="编辑任务名称" /></td>
                         <td>${fmtTime(sec)}</td>
                         <td>${percent}%</td>
                         <td><div class="progress"><span style="width:${percent}%;"></span></div></td>
@@ -358,6 +449,7 @@
                     </thead>
                     <tbody>${rows}</tbody>
                 </table>`;
+            renderChart(entries, total);
         }
 
         function updateDisplay() {
@@ -477,6 +569,21 @@
             modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
             startPauseBtn.addEventListener('click', toggleStartPause);
             resetBtn.addEventListener('click', resetTimer);
+            taskTable.addEventListener('change', (e) => {
+                if (e.target.classList.contains('task-name-input')) {
+                    const oldName = e.target.dataset.name;
+                    const newName = e.target.value;
+                    if (oldName !== newName) renameTask(oldName, newName);
+                }
+            });
+            taskTable.addEventListener('keydown', (e) => {
+                if (e.target.classList.contains('task-name-input') && e.key === 'Enter') {
+                    e.preventDefault();
+                    const oldName = e.target.dataset.name;
+                    const newName = e.target.value;
+                    if (oldName !== newName) renameTask(oldName, newName);
+                }
+            });
         }
 
         init();
