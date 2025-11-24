@@ -228,7 +228,15 @@
         }
         #chart {
             width: 100%;
-            height: 320px;
+            height: 340px;
+        }
+        .chart-fallback {
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+            padding: 32px 12px;
+            border: 2px dashed #1f1f1f;
+            background: #0c0c0c;
         }
     </style>
 </head>
@@ -368,10 +376,21 @@
             renderTable();
         }
 
+        function commitNameChange(target) {
+            if (!target.classList.contains('task-name-input')) return;
+            const oldName = target.dataset.name;
+            const newName = target.value;
+            if (oldName !== newName) renameTask(oldName, newName);
+        }
+
         let chartInstance = null;
 
         function renderChart(entries, total) {
             if (!chartContainer) return;
+            if (typeof echarts === 'undefined') {
+                chartContainer.innerHTML = '<div class="chart-fallback">饼状图资源加载失败，请联网刷新或稍后重试。</div>';
+                return;
+            }
             if (!chartInstance) {
                 chartInstance = echarts.init(chartContainer);
                 window.addEventListener('resize', () => chartInstance && chartInstance.resize());
@@ -569,19 +588,12 @@
             modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
             startPauseBtn.addEventListener('click', toggleStartPause);
             resetBtn.addEventListener('click', resetTimer);
-            taskTable.addEventListener('change', (e) => {
-                if (e.target.classList.contains('task-name-input')) {
-                    const oldName = e.target.dataset.name;
-                    const newName = e.target.value;
-                    if (oldName !== newName) renameTask(oldName, newName);
-                }
-            });
+            taskTable.addEventListener('change', (e) => commitNameChange(e.target));
+            taskTable.addEventListener('focusout', (e) => commitNameChange(e.target));
             taskTable.addEventListener('keydown', (e) => {
                 if (e.target.classList.contains('task-name-input') && e.key === 'Enter') {
                     e.preventDefault();
-                    const oldName = e.target.dataset.name;
-                    const newName = e.target.value;
-                    if (oldName !== newName) renameTask(oldName, newName);
+                    commitNameChange(e.target);
                 }
             });
         }
