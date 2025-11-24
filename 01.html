@@ -42,6 +42,17 @@
             --xumo-bg-image: url('https://cdn.openai.com/files/assistant/task-assets/xumo-p1-bg.jpg');
             --xumo-avatar: url('https://cdn.openai.com/files/assistant/task-assets/xumo-p1-face.png');
         }
+        body.theme-cyan {
+            --accent: #4fd4ff;
+            --accent-2: #a8f1ff;
+            --bg: radial-gradient(circle at 25% 30%, rgba(79,212,255,0.08), transparent 45%), #041016;
+            --panel: #0a1b22;
+            --panel-2: #0f252f;
+            --muted: #b4d8e4;
+            --text: #e8fbff;
+            --grid: rgba(79, 212, 255, 0.12);
+            --chart-bg: #07141a;
+        }
         * { box-sizing: border-box; }
         body {
             margin: 0;
@@ -461,6 +472,10 @@
             box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(155,124,248,0.22);
             background: radial-gradient(circle at 70% 20%, rgba(150,120,255,0.18), transparent 45%), var(--chart-bg);
         }
+        body.theme-cyan .chart-shell {
+            box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(79,212,255,0.22);
+            background: linear-gradient(135deg, rgba(79,212,255,0.08), rgba(79,212,255,0.02)), var(--chart-bg);
+        }
         #chart {
             width: 100%;
             height: 380px;
@@ -481,12 +496,12 @@
         <div class="theme-switch" id="themeSwitcher">
             <button class="theme-btn active" data-theme="default">像素橙</button>
             <button class="theme-btn" data-theme="stardew">星露谷·泥土</button>
+            <button class="theme-btn" data-theme="cyan">青白霜风</button>
             <button class="theme-btn" data-theme="xumo">许墨·紫羽</button>
         </div>
     </header>
     <div class="theme-note">切换皮肤会同步更新背景、控件色调与饼状图配色；“许墨”皮肤下开始计时时会触发 Live2D 风格的微笑点头。</div>
-    <div class="nav-card">导航提示：默认为像素橙风格。星露谷皮肤将饼状图换成泥土色块，许墨皮肤提供紫色鸢尾花氛围与互动头像，可随时切换。</div>
-    <div class="nav-card">
+    <div class="nav-card" id="xumoImageCard">
         <div><strong>许墨皮肤图片替换</strong>（加载失败时在此粘贴可访问的图片链接或相对路径）：</div>
         <div class="image-help-grid">
             <div>
@@ -580,6 +595,7 @@
         const taskTable = document.getElementById('taskTable');
         const chartContainer = document.getElementById('chart');
         const themeButtons = document.querySelectorAll('.theme-btn');
+        const xumoImageCard = document.getElementById('xumoImageCard');
         const live2dCard = document.getElementById('live2dCard');
         const live2dStatus = document.getElementById('live2dStatus');
         const live2dBubble = document.getElementById('live2dBubble');
@@ -605,6 +621,11 @@
                 className: 'theme-stardew',
                 chartColors: ['#6b3e26', '#9c6b3f', '#c18b56', '#d8b07a', '#e3cba4', '#7ea04d', '#bcd364', '#4a2f1a'],
                 chartBackground: '#1b120a',
+            },
+            cyan: {
+                className: 'theme-cyan',
+                chartColors: ['#4fd4ff', '#a8f1ff', '#6ef0c6', '#e1f7ff', '#b4d8e4', '#89d0ff', '#4fe6c8', '#e8fbff'],
+                chartBackground: '#07141a',
             },
             xumo: {
                 className: 'theme-xumo',
@@ -658,6 +679,9 @@
             document.body.classList.remove(...Object.values(themes).map(t => t.className));
             document.body.classList.add(themes[name].className);
             themeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.theme === name));
+            if (xumoImageCard) {
+                xumoImageCard.style.display = name === 'xumo' ? 'block' : 'none';
+            }
             renderTable();
         }
 
