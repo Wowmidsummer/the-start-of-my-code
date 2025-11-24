@@ -39,6 +39,8 @@
             --text: #f0ecff;
             --grid: rgba(155, 124, 248, 0.08);
             --chart-bg: #0f0b16;
+            --xumo-bg-image: url('https://cdn.openai.com/files/assistant/task-assets/xumo-p1-bg.jpg');
+            --xumo-avatar: url('https://cdn.openai.com/files/assistant/task-assets/xumo-p1-face.png');
         }
         * { box-sizing: border-box; }
         body {
@@ -51,6 +53,31 @@
             min-height: 100vh;
             padding: 38px 30px 52px;
             letter-spacing: 0.3px;
+        }
+        body.theme-xumo {
+            position: relative;
+            background-blend-mode: screen, normal, overlay, normal;
+            overflow-x: hidden;
+        }
+        body.theme-xumo::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image: var(--xumo-bg-image);
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px) saturate(1.05);
+            opacity: 0.55;
+            z-index: -2;
+        }
+        body.theme-xumo::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(155,124,248,0.25), transparent 48%),
+                linear-gradient(145deg, rgba(34,24,53,0.85), rgba(14,11,20,0.9));
+            z-index: -1;
+            pointer-events: none;
         }
         .top-nav {
             max-width: 1600px;
@@ -298,35 +325,27 @@
             background: radial-gradient(circle at 10% 10%, rgba(155,124,248,0.25), transparent 45%),
                 linear-gradient(145deg, #1c142a, #120d1c);
             box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(155,124,248,0.18);
+            position: relative;
+            overflow: hidden;
         }
         body.theme-xumo .live2d-card { display: flex; }
         .live2d-portrait {
-            width: 76px;
-            height: 76px;
+            width: 92px;
+            height: 92px;
             border: 2px solid #6a5ab3;
-            background: radial-gradient(circle at 50% 35%, #c6b4ff, #7e6bc5 58%, #291f3e 70%);
+            background: radial-gradient(circle at 45% 30%, rgba(198,180,255,0.5), rgba(46,30,69,0.9)), #0d0817;
             position: relative;
             box-shadow: 0 0 0 2px #0a0811 inset, 4px 4px 0 rgba(0,0,0,0.6);
             overflow: hidden;
         }
-        .live2d-face {
+        .live2d-face-img {
             position: absolute;
-            bottom: 16px;
-            left: 10px;
-            width: 56px;
-            height: 42px;
-            background: radial-gradient(circle at 30% 30%, #f4edff 40%, #bba6ff 80%);
-            border-radius: 50% 50% 46% 48% / 60% 60% 40% 40%;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.25);
-        }
-        .live2d-eye {
-            position: absolute;
-            width: 10px;
-            height: 6px;
-            background: #241833;
-            border-radius: 0 0 6px 6px;
-            top: 44px;
-            box-shadow: 18px 0 0 #241833;
+            inset: 4px;
+            background-image: var(--xumo-avatar);
+            background-size: cover;
+            background-position: center;
+            filter: drop-shadow(0 0 6px rgba(155,124,248,0.35));
+            border-radius: 10px;
         }
         .live2d-bloom {
             position: absolute;
@@ -337,26 +356,45 @@
             background: radial-gradient(circle, rgba(170,120,255,0.25), transparent 65%);
             filter: blur(0.4px);
         }
+        .live2d-bubble {
+            position: absolute;
+            left: 110px;
+            top: 10px;
+            padding: 10px 12px 8px;
+            background: linear-gradient(145deg, rgba(207,189,255,0.18), rgba(120,92,180,0.55));
+            border: 2px solid #6a5ab3;
+            box-shadow: 0 0 0 2px #0c0814 inset, 4px 4px 0 rgba(0,0,0,0.5);
+            font-size: 12px;
+            color: var(--text);
+            letter-spacing: 0.8px;
+            border-radius: 10px;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+        .live2d-bubble::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 14px;
+            border: 8px solid transparent;
+            border-right-color: #6a5ab3;
+            filter: drop-shadow(0 0 0 2px #0c0814);
+        }
         .live2d-status {
             font-size: 11px;
             color: var(--text);
             letter-spacing: 0.6px;
         }
-        .live2d-card.active .live2d-face {
+        .live2d-card.active .live2d-face-img {
             animation: nod 0.9s ease-in-out 2;
-        }
-        .live2d-card.active .live2d-eye {
-            animation: blink 2s ease-in-out infinite;
         }
         @keyframes nod {
             0%, 100% { transform: translateY(0) rotate(0deg); }
             25% { transform: translateY(2px) rotate(-1deg); }
             50% { transform: translateY(-2px) rotate(1deg); }
             75% { transform: translateY(1px) rotate(-1deg); }
-        }
-        @keyframes blink {
-            0%, 90%, 100% { height: 6px; }
-            95% { height: 1px; }
         }
         .footer-note {
             color: var(--muted);
@@ -436,10 +474,10 @@
 
             <div class="live2d-card" id="live2dCard" aria-hidden="true">
                 <div class="live2d-portrait">
-                    <div class="live2d-face"></div>
-                    <div class="live2d-eye"></div>
+                    <div class="live2d-face-img"></div>
                     <div class="live2d-bloom"></div>
                 </div>
+                <div class="live2d-bubble" id="live2dBubble">❤</div>
                 <div class="live2d-status" id="live2dStatus">许墨：静候开始</div>
             </div>
 
@@ -492,6 +530,7 @@
         const themeButtons = document.querySelectorAll('.theme-btn');
         const live2dCard = document.getElementById('live2dCard');
         const live2dStatus = document.getElementById('live2dStatus');
+        const live2dBubble = document.getElementById('live2dBubble');
         const lengthInputs = {
             focus: document.getElementById('focusLength'),
             short: document.getElementById('shortLength'),
@@ -605,10 +644,18 @@
             if (!live2dCard || currentTheme !== 'xumo') return;
             live2dCard.classList.add('active');
             live2dStatus.textContent = '许墨：微笑点头';
+            if (live2dBubble) {
+                live2dBubble.style.opacity = '1';
+                live2dBubble.style.transform = 'translateY(0)';
+            }
             if (live2dTimeout) clearTimeout(live2dTimeout);
             live2dTimeout = setTimeout(() => {
                 live2dCard.classList.remove('active');
                 live2dStatus.textContent = '许墨：静候开始';
+                if (live2dBubble) {
+                    live2dBubble.style.opacity = '0';
+                    live2dBubble.style.transform = 'translateY(-6px)';
+                }
             }, 1800);
         }
 
