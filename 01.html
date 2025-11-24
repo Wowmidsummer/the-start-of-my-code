@@ -25,18 +25,18 @@
                 radial-gradient(circle at 20% 20%, rgba(255, 122, 24, 0.08), transparent 45%), var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding: 32px 22px 44px;
+            padding: 38px 30px 52px;
             letter-spacing: 0.3px;
         }
         h1, h2 { margin: 0; }
-        h1 { font-size: 18px; }
-        h2 { font-size: 14px; }
+        h1 { font-size: 20px; }
+        h2 { font-size: 15px; }
         .container {
-            max-width: 1380px;
+            max-width: 1600px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
-            gap: 24px;
+            grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr);
+            gap: 28px;
         }
         @media (max-width: 960px) {
             .container { grid-template-columns: 1fr; }
@@ -47,7 +47,7 @@
             box-shadow:
                 0 0 0 2px #000,
                 8px 8px 0 rgba(255,122,24,0.15);
-            padding: 18px;
+            padding: 22px;
         }
         .header {
             display: flex;
@@ -64,17 +64,17 @@
         .tabs {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            margin-bottom: 12px;
         }
         .tab {
-            padding: 12px 10px 10px;
+            padding: 14px 12px 12px;
             border: 2px solid #222;
             background: #0c0c0c;
             color: var(--muted);
             cursor: pointer;
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
             letter-spacing: 1px;
             box-shadow: 0 0 0 2px #000 inset;
             transition: transform 0.1s ease, box-shadow 0.1s ease;
@@ -86,9 +86,9 @@
             transform: translateY(-2px);
         }
         .timer {
-            font-size: 64px;
+            font-size: 82px;
             text-align: center;
-            margin: 18px 0 8px;
+            margin: 22px 0 10px;
             letter-spacing: 3px;
             color: var(--accent-2);
             text-shadow: 0 0 8px rgba(255,122,24,0.5);
@@ -96,22 +96,22 @@
         .label {
             text-align: center;
             color: var(--muted);
-            font-size: 11px;
-            margin-bottom: 12px;
+            font-size: 12px;
+            margin-bottom: 14px;
         }
         .actions {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 14px;
+            margin-bottom: 14px;
         }
         .btn {
-            padding: 12px 16px 10px;
+            padding: 13px 18px 11px;
             border: 2px solid var(--accent);
             background: linear-gradient(145deg, #ff8c26, #ff5a1f);
             color: #0a0a0a;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
             letter-spacing: 1px;
             box-shadow: 0 0 0 2px #000, 4px 4px 0 rgba(0,0,0,0.6);
             text-transform: uppercase;
@@ -131,18 +131,18 @@
         }
         .mode-toggle {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: center;
-            margin-top: 6px;
+            margin-top: 8px;
             flex-wrap: wrap;
         }
         .mode-toggle button {
-            padding: 8px 10px 7px;
+            padding: 9px 12px 8px;
             border: 2px solid #222;
             background: #0e0e0e;
             color: var(--muted);
             cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
             letter-spacing: 0.5px;
             box-shadow: 0 0 0 2px #000 inset;
         }
@@ -154,29 +154,29 @@
         }
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-top: 14px;
+            gap: 12px;
+            margin-top: 16px;
             flex-wrap: wrap;
         }
         input, select {
             background: #0c0c0c;
             border: 2px solid #1f1f1f;
             color: var(--text);
-            padding: 11px 12px 9px;
-            font-size: 11px;
+            padding: 12px 14px 10px;
+            font-size: 12px;
             flex: 1;
-            min-width: 200px;
+            min-width: 240px;
             box-shadow: 0 0 0 2px #000 inset;
         }
-        label { color: var(--muted); font-size: 10px; display: block; margin-bottom: 4px; }
+        label { color: var(--muted); font-size: 11px; display: block; margin-bottom: 6px; }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 11px;
+            margin-top: 12px;
+            font-size: 12px;
         }
         th, td {
-            padding: 10px 6px;
+            padding: 11px 8px;
             text-align: left;
             border-bottom: 2px solid #1f1f1f;
         }
@@ -186,8 +186,8 @@
             background: #0c0c0c;
             border: 2px solid #222;
             color: var(--text);
-            padding: 8px 9px 7px;
-            font-size: 10px;
+            padding: 9px 10px 8px;
+            font-size: 11px;
             box-shadow: 0 0 0 2px #000 inset;
         }
         .progress {
@@ -228,7 +228,7 @@
         }
         #chart {
             width: 100%;
-            height: 340px;
+            height: 380px;
         }
         .chart-fallback {
             color: var(--muted);
@@ -373,6 +373,9 @@
             delete data.tasks[oldName];
             data.tasks[trimmed] = (data.tasks[trimmed] || 0) + seconds;
             writeData(data);
+            if ((taskInput.value || '杂项').trim() === oldName) {
+                taskInput.value = trimmed;
+            }
             renderTable();
         }
 
@@ -415,28 +418,33 @@
                     formatter: ({ name, value, percent }) => `${name}: ${fmtTime(value)} (${Math.round(percent)}%)`,
                 },
                 legend: {
-                    top: 10,
-                    textStyle: { color: '#fdf4dd', fontFamily: 'Share Tech Mono', fontSize: 10 },
+                    top: '5%',
+                    left: 'center',
+                    textStyle: { color: '#fdf4dd', fontFamily: 'Share Tech Mono', fontSize: 11 },
                 },
                 series: [{
                     name: '今日分布',
                     type: 'pie',
-                    radius: ['45%', '70%'],
+                    radius: ['40%', '70%'],
                     center: ['50%', '55%'],
                     avoidLabelOverlap: false,
                     itemStyle: {
                         borderColor: '#0c0c0c',
-                        borderWidth: 3,
+                        borderWidth: 2,
                     },
-                    label: {
-                        formatter: '{b}\n{d}% ',
-                        color: '#fdf4dd',
-                        fontSize: 10,
-                        fontFamily: 'Share Tech Mono',
+                    label: { show: false, position: 'center' },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            color: '#fdf4dd',
+                            formatter: '{b}\n{d}%'
+                        },
                     },
-                    labelLine: { show: true, lineStyle: { color: '#ffb52c' } },
+                    labelLine: { show: false },
                     data,
-                    color: ['#ff7a18', '#faae2b', '#5e6ad2', '#35c98d', '#2b2b2b', '#f45c43', '#46c7ff'],
+                    color: ['#ff7a18', '#faae2b', '#5e6ad2', '#35c98d', '#2b2b2b', '#f45c43', '#46c7ff', '#ff9f43'],
                 }],
             });
         }
