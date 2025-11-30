@@ -29,30 +29,6 @@
             --grid: rgba(183, 140, 92, 0.12);
             --chart-bg: #1b120a;
         }
-        body.theme-xumo {
-            --accent: #9b7cf8;
-            --accent-2: #c6b4ff;
-            --bg: radial-gradient(circle at 20% 20%, rgba(155,124,248,0.08), transparent 38%), #0d0a14;
-            --panel: #14101d;
-            --panel-2: #1a1526;
-            --muted: #c3b9de;
-            --text: #f0ecff;
-            --grid: rgba(155, 124, 248, 0.08);
-            --chart-bg: #0f0b16;
-            --xumo-bg-image: url('https://cdn.openai.com/files/assistant/task-assets/xumo-p1-bg.jpg');
-            --xumo-avatar: url('https://cdn.openai.com/files/assistant/task-assets/xumo-p1-face.png');
-        }
-        body.theme-cyan {
-            --accent: #4fd4ff;
-            --accent-2: #a8f1ff;
-            --bg: radial-gradient(circle at 25% 30%, rgba(79,212,255,0.08), transparent 45%), #041016;
-            --panel: #0a1b22;
-            --panel-2: #0f252f;
-            --muted: #b4d8e4;
-            --text: #e8fbff;
-            --grid: rgba(79, 212, 255, 0.12);
-            --chart-bg: #07141a;
-        }
         * { box-sizing: border-box; }
         body {
             margin: 0;
@@ -64,31 +40,6 @@
             min-height: 100vh;
             padding: 38px 30px 52px;
             letter-spacing: 0.3px;
-        }
-        body.theme-xumo {
-            position: relative;
-            background-blend-mode: screen, normal, overlay, normal;
-            overflow-x: hidden;
-        }
-        body.theme-xumo::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background-image: var(--xumo-bg-image);
-            background-size: cover;
-            background-position: center;
-            filter: blur(4px) saturate(1.05);
-            opacity: 0.55;
-            z-index: -2;
-        }
-        body.theme-xumo::after {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 50% 30%, rgba(155,124,248,0.25), transparent 48%),
-                linear-gradient(145deg, rgba(34,24,53,0.85), rgba(14,11,20,0.9));
-            z-index: -1;
-            pointer-events: none;
         }
         .top-nav {
             max-width: 1600px;
@@ -108,6 +59,21 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+        }
+        .nav-extra {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-btn {
+            padding: 10px 14px 9px;
+            border: 2px solid #1f1f1f;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            color: var(--text);
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 0 0 2px #000 inset, 3px 3px 0 rgba(0,0,0,0.45);
         }
         .theme-btn {
             padding: 10px 12px 9px;
@@ -319,6 +285,95 @@
             min-width: 240px;
             box-shadow: 0 0 0 2px #000 inset;
         }
+        .task-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
+        }
+        .favorite-trigger {
+            position: relative;
+            padding: 10px 12px 9px;
+            border: 2px solid #1f1f1f;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            box-shadow: 0 0 0 2px #000 inset, 3px 3px 0 rgba(0,0,0,0.45);
+            min-width: 120px;
+            text-align: center;
+        }
+        .favorite-trigger:hover .favorite-panel,
+        .favorite-panel:hover {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .favorite-panel {
+            position: absolute;
+            right: 0;
+            top: 110%;
+            width: 340px;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 8px 8px 0 rgba(0,0,0,0.5);
+            padding: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-6px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            z-index: 10;
+        }
+        .favorite-panel h3 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            color: var(--text);
+        }
+        .favorite-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .favorite-actions button {
+            padding: 10px 12px 9px;
+            border: 2px solid var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #0a0a0a;
+            cursor: pointer;
+            font-size: 10px;
+            box-shadow: 0 0 0 2px #000 inset, 3px 3px 0 rgba(0,0,0,0.4);
+        }
+        .favorite-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow: auto;
+        }
+        .favorite-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 6px;
+            align-items: center;
+        }
+        .favorite-row button {
+            padding: 8px 10px 7px;
+            border: 2px solid #1f1f1f;
+            background: #0d0d0d;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 9px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .favorite-empty {
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center;
+            padding: 8px 4px;
+        }
         label { color: var(--muted); font-size: 11px; display: block; margin-bottom: 6px; }
         table {
             width: 100%;
@@ -363,93 +418,59 @@
             box-shadow: 2px 2px 0 rgba(0,0,0,0.6);
             text-transform: uppercase;
         }
-        .live2d-card {
-            display: none;
-            align-items: center;
-            gap: 12px;
-            margin-top: 12px;
-            padding: 12px 14px;
-            border: 2px solid #2e2543;
-            background: radial-gradient(circle at 10% 10%, rgba(155,124,248,0.25), transparent 45%),
-                linear-gradient(145deg, #1c142a, #120d1c);
-            box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(155,124,248,0.18);
-            position: relative;
-            overflow: hidden;
-        }
-        body.theme-xumo .live2d-card { display: flex; }
-        .live2d-portrait {
-            width: 92px;
-            height: 92px;
-            border: 2px solid #6a5ab3;
-            background: radial-gradient(circle at 45% 30%, rgba(198,180,255,0.5), rgba(46,30,69,0.9)), #0d0817;
-            position: relative;
-            box-shadow: 0 0 0 2px #0a0811 inset, 4px 4px 0 rgba(0,0,0,0.6);
-            overflow: hidden;
-        }
-        .live2d-face-img {
-            position: absolute;
-            inset: 4px;
-            background-image: var(--xumo-avatar);
-            background-size: cover;
-            background-position: center;
-            filter: drop-shadow(0 0 6px rgba(155,124,248,0.35));
-            border-radius: 10px;
-        }
-        .live2d-bloom {
-            position: absolute;
-            right: -12px;
-            bottom: -8px;
-            width: 58px;
-            height: 58px;
-            background: radial-gradient(circle, rgba(170,120,255,0.25), transparent 65%);
-            filter: blur(0.4px);
-        }
-        .live2d-bubble {
-            position: absolute;
-            left: 110px;
-            top: 10px;
-            padding: 10px 12px 8px;
-            background: linear-gradient(145deg, rgba(207,189,255,0.18), rgba(120,92,180,0.55));
-            border: 2px solid #6a5ab3;
-            box-shadow: 0 0 0 2px #0c0814 inset, 4px 4px 0 rgba(0,0,0,0.5);
-            font-size: 12px;
-            color: var(--text);
-            letter-spacing: 0.8px;
-            border-radius: 10px;
-            opacity: 0;
-            transform: translateY(-6px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            pointer-events: none;
-        }
-        .live2d-bubble::after {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 14px;
-            border: 8px solid transparent;
-            border-right-color: #6a5ab3;
-            filter: drop-shadow(0 0 0 2px #0c0814);
-        }
-        .live2d-status {
-            font-size: 11px;
-            color: var(--text);
-            letter-spacing: 0.6px;
-        }
-        .live2d-card.active .live2d-face-img {
-            animation: nod 0.9s ease-in-out 2;
-        }
-        @keyframes nod {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(2px) rotate(-1deg); }
-            50% { transform: translateY(-2px) rotate(1deg); }
-            75% { transform: translateY(1px) rotate(-1deg); }
-        }
         .footer-note {
             color: var(--muted);
             font-size: 9px;
             margin-top: 10px;
             text-align: right;
             letter-spacing: 0.5px;
+        }
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+        }
+        .modal.open { display: flex; }
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(4px);
+        }
+        .modal-card {
+            position: relative;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 10px 10px 0 rgba(0,0,0,0.55);
+            padding: 18px;
+            max-width: 960px;
+            width: 94%;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .modal-close {
+            border: 2px solid #222;
+            background: #0c0c0c;
+            color: var(--muted);
+            padding: 8px 10px 7px;
+            cursor: pointer;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .modal-highlight {
+            margin: 12px 0;
+            padding: 10px 12px;
+            border: 2px dashed #1f1f1f;
+            color: var(--muted);
+            font-size: 11px;
         }
         .chart-shell {
             margin-top: 4px;
@@ -468,14 +489,6 @@
             );
             box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(156,107,63,0.28);
         }
-        body.theme-xumo .chart-shell {
-            box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(155,124,248,0.22);
-            background: radial-gradient(circle at 70% 20%, rgba(150,120,255,0.18), transparent 45%), var(--chart-bg);
-        }
-        body.theme-cyan .chart-shell {
-            box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(79,212,255,0.22);
-            background: linear-gradient(135deg, rgba(79,212,255,0.08), rgba(79,212,255,0.02)), var(--chart-bg);
-        }
         #chart {
             width: 100%;
             height: 380px;
@@ -492,30 +505,16 @@
 </head>
 <body class="theme-default">
     <header class="top-nav">
-        <div class="brand">像素番茄 · 主题切换</div>
-        <div class="theme-switch" id="themeSwitcher">
-            <button class="theme-btn active" data-theme="default">像素橙</button>
-            <button class="theme-btn" data-theme="stardew">星露谷·泥土</button>
-            <button class="theme-btn" data-theme="cyan">青白霜风</button>
-            <button class="theme-btn" data-theme="xumo">许墨·紫羽</button>
+        <div class="brand">像素番茄 · 多主题</div>
+        <div class="nav-extra">
+            <div class="theme-switch" id="themeSwitcher">
+                <button class="theme-btn active" data-theme="default">像素橙</button>
+                <button class="theme-btn" data-theme="stardew">星露谷·泥土</button>
+            </div>
+            <button class="nav-btn" id="openMonthly">月度报告</button>
         </div>
     </header>
-    <div class="theme-note">切换皮肤会同步更新背景、控件色调与饼状图配色；“许墨”皮肤下开始计时时会触发 Live2D 风格的微笑点头。</div>
-    <div class="nav-card" id="xumoImageCard">
-        <div><strong>许墨皮肤图片替换</strong>（加载失败时在此粘贴可访问的图片链接或相对路径）：</div>
-        <div class="image-help-grid">
-            <div>
-                <label for="xumoBgUrl">背景图 URL（填本地或网上图片）</label>
-                <input id="xumoBgUrl" placeholder="例如 ./my-xumo-bg.jpg">
-            </div>
-            <div>
-                <label for="xumoFaceUrl">头像图 URL（填脸部或立绘）</label>
-                <input id="xumoFaceUrl" placeholder="例如 ./my-xumo-face.png">
-            </div>
-            <button id="applyXumoImages">应用并保存</button>
-            <div class="image-help-note">此处会覆盖 CSS 里的 <code>--xumo-bg-image</code> 与 <code>--xumo-avatar</code> 变量；保存后会写入 localStorage，下次打开仍沿用。若想恢复默认，清空输入再点击“应用并保存”。</div>
-        </div>
-    </div>
+    <div class="theme-note">切换皮肤会同步更新背景、控件色调与饼状图配色；同时在顶部可打开月度报告查看当月完成情况。</div>
     <div class="container">
         <section class="card">
             <div class="header">
@@ -539,15 +538,6 @@
                 <button class="btn ghost" id="reset">重置</button>
             </div>
 
-            <div class="live2d-card" id="live2dCard" aria-hidden="true">
-                <div class="live2d-portrait">
-                    <div class="live2d-face-img"></div>
-                    <div class="live2d-bloom"></div>
-                </div>
-                <div class="live2d-bubble" id="live2dBubble">❤</div>
-                <div class="live2d-status" id="live2dStatus">许墨：静候开始</div>
-            </div>
-
             <div class="mode-toggle" id="pomodoroModes">
                 <button data-mode="focus" class="active">专注 25'</button>
                 <button data-mode="short">小憩 5'</button>
@@ -556,7 +546,24 @@
 
             <div class="input-group">
                 <label for="taskInput">当前任务</label>
-                <input id="taskInput" placeholder="输入任务名称，例如：整理周报" autocomplete="off">
+                <div class="task-input-wrap">
+                    <input id="taskInput" list="favoriteTasks" placeholder="输入任务名称，例如：整理周报" autocomplete="off">
+                    <div class="favorite-trigger">历史常用 ▾
+                        <div class="favorite-panel">
+                            <h3>选择 / 编辑常用任务</h3>
+                            <div class="favorite-actions">
+                                <input id="favoriteNameInput" placeholder="新增常用任务，例如：整理周报">
+                                <button id="favoriteAddBtn">添加</button>
+                            </div>
+                            <div class="favorite-actions" style="grid-template-columns: 1fr auto; margin-top: -4px;">
+                                <input id="favoriteUseCurrent" placeholder="使用当前输入保存为常用" readonly>
+                                <button id="favoriteUseBtn" aria-label="保存当前任务到常用">保存当前</button>
+                            </div>
+                            <div id="favoriteList" class="favorite-list"></div>
+                        </div>
+                    </div>
+                    <datalist id="favoriteTasks"></datalist>
+                </div>
             </div>
 
             <div class="input-group">
@@ -580,6 +587,21 @@
         </section>
     </div>
 
+    <div class="modal" id="monthlyModal" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>月度报告</h2>
+                <button class="modal-close" id="closeMonthly">关闭</button>
+            </div>
+            <div class="modal-highlight" id="monthSummaryText">加载中...</div>
+            <div class="chart-shell">
+                <div id="monthChart" style="width:100%;height:320px;"></div>
+            </div>
+            <div id="monthTable" class="table"></div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
     <script>
         const tabs = document.querySelectorAll('.tab');
@@ -594,14 +616,22 @@
         const summaryTotal = document.getElementById('summaryTotal');
         const taskTable = document.getElementById('taskTable');
         const chartContainer = document.getElementById('chart');
+        const monthChartContainer = document.getElementById('monthChart');
         const themeButtons = document.querySelectorAll('.theme-btn');
-        const xumoImageCard = document.getElementById('xumoImageCard');
-        const live2dCard = document.getElementById('live2dCard');
-        const live2dStatus = document.getElementById('live2dStatus');
-        const live2dBubble = document.getElementById('live2dBubble');
-        const xumoBgInput = document.getElementById('xumoBgUrl');
-        const xumoFaceInput = document.getElementById('xumoFaceUrl');
-        const applyXumoBtn = document.getElementById('applyXumoImages');
+        const openMonthlyBtn = document.getElementById('openMonthly');
+        const closeMonthlyBtn = document.getElementById('closeMonthly');
+        const monthlyModal = document.getElementById('monthlyModal');
+        const monthSummaryText = document.getElementById('monthSummaryText');
+        const monthTable = document.getElementById('monthTable');
+        const favoriteList = document.getElementById('favoriteList');
+        const favoriteAddBtn = document.getElementById('favoriteAddBtn');
+        const favoriteNameInput = document.getElementById('favoriteNameInput');
+        const favoriteUseCurrent = document.getElementById('favoriteUseCurrent');
+        const favoriteUseBtn = document.getElementById('favoriteUseBtn');
+        const favoriteDatalist = document.getElementById('favoriteTasks');
+        const live2dCard = null;
+        const live2dStatus = null;
+        const live2dBubble = null;
         const lengthInputs = {
             focus: document.getElementById('focusLength'),
             short: document.getElementById('shortLength'),
@@ -622,43 +652,8 @@
                 chartColors: ['#6b3e26', '#9c6b3f', '#c18b56', '#d8b07a', '#e3cba4', '#7ea04d', '#bcd364', '#4a2f1a'],
                 chartBackground: '#1b120a',
             },
-            cyan: {
-                className: 'theme-cyan',
-                chartColors: ['#4fd4ff', '#a8f1ff', '#6ef0c6', '#e1f7ff', '#b4d8e4', '#89d0ff', '#4fe6c8', '#e8fbff'],
-                chartBackground: '#07141a',
-            },
-            xumo: {
-                className: 'theme-xumo',
-                chartColors: ['#c8b2ff', '#8f7de0', '#5e4a8f', '#2b253a', '#6ad0ff', '#d8d7f5', '#a45bd8', '#7b6bd6'],
-                chartBackground: '#0f0b16',
-            },
         };
         let currentTheme = 'default';
-
-        const xumoImageDefaults = {
-            bg: "https://cdn.openai.com/files/assistant/task-assets/xumo-p1-bg.jpg",
-            face: "https://cdn.openai.com/files/assistant/task-assets/xumo-p1-face.png",
-        };
-
-        function loadXumoImages() {
-            const saved = (() => {
-                try { return JSON.parse(localStorage.getItem('xumo-images') || '{}'); } catch { return {}; }
-            })();
-            return {
-                bg: saved.bg || xumoImageDefaults.bg,
-                face: saved.face || xumoImageDefaults.face,
-            };
-        }
-
-        function applyXumoImages(save = false) {
-            const bg = (xumoBgInput?.value?.trim()) || xumoImageDefaults.bg;
-            const face = (xumoFaceInput?.value?.trim()) || xumoImageDefaults.face;
-            document.body.style.setProperty('--xumo-bg-image', `url('${bg}')`);
-            document.body.style.setProperty('--xumo-avatar', `url('${face}')`);
-            if (save) {
-                localStorage.setItem('xumo-images', JSON.stringify({ bg, face }));
-            }
-        }
 
         const state = {
             type: 'pomodoro',
@@ -679,10 +674,10 @@
             document.body.classList.remove(...Object.values(themes).map(t => t.className));
             document.body.classList.add(themes[name].className);
             themeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.theme === name));
-            if (xumoImageCard) {
-                xumoImageCard.style.display = name === 'xumo' ? 'block' : 'none';
-            }
             renderTable();
+            if (monthlyModal?.classList.contains('open')) {
+                openMonthlyModal();
+            }
         }
 
         function fmtTime(sec) {
@@ -696,40 +691,158 @@
             return new Date().toISOString().slice(0, 10);
         }
 
-        function readData() {
+        function monthKey() {
+            return new Date().toISOString().slice(0, 7);
+        }
+
+        function readLog() {
             const raw = localStorage.getItem('pomodoro-log');
-            const today = todayKey();
-            if (!raw) return { date: today, tasks: {} };
+            if (!raw) return { dates: {} };
             try {
                 const parsed = JSON.parse(raw);
-                if (parsed.date !== today) return { date: today, tasks: {} };
-                return parsed;
-            } catch {
-                return { date: today, tasks: {} };
+                if (parsed.dates) return { dates: parsed.dates };
+                if (parsed.date && parsed.tasks) {
+                    return { dates: { [parsed.date]: parsed.tasks } };
+                }
+            } catch { /* ignore */ }
+            return { dates: {} };
+        }
+
+        function ensureToday(log) {
+            const key = todayKey();
+            if (!log.dates[key]) log.dates[key] = {};
+            return log;
+        }
+
+        function writeLog(log) {
+            localStorage.setItem('pomodoro-log', JSON.stringify(log));
+        }
+
+        function readToday() {
+            const log = ensureToday(readLog());
+            writeLog(log);
+            return log;
+        }
+
+        function monthlySummary() {
+            const log = readLog();
+            const currentMonth = monthKey();
+            const tasks = {};
+            let dayCount = 0;
+            let total = 0;
+            Object.entries(log.dates).forEach(([date, items]) => {
+                if (!date.startsWith(currentMonth)) return;
+                const dayTotal = Object.values(items || {}).reduce((sum, sec) => sum + sec, 0);
+                if (dayTotal > 0) dayCount += 1;
+                Object.entries(items || {}).forEach(([name, sec]) => {
+                    tasks[name] = (tasks[name] || 0) + sec;
+                    total += sec;
+                });
+            });
+            const entries = Object.entries(tasks).sort((a, b) => b[1] - a[1]);
+            return { entries, total, dayCount };
+        }
+
+        const FAVORITES_KEY = 'pomodoro-favorites';
+        let favorites = [];
+
+        function loadFavorites() {
+            try {
+                const raw = localStorage.getItem(FAVORITES_KEY);
+                if (raw) favorites = JSON.parse(raw);
+                if (!Array.isArray(favorites)) favorites = [];
+            } catch { favorites = []; }
+            if (!favorites.length) favorites = ['整理周报', '复盘 & 总结', '邮件清理'];
+        }
+
+        function persistFavorites() {
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        function addFavorite(name) {
+            const trimmed = (name || '').trim();
+            if (!trimmed) return;
+            favorites = [trimmed, ...favorites.filter(item => item !== trimmed)].slice(0, 30);
+            persistFavorites();
+        }
+
+        function renderFavorites() {
+            if (!favoriteList) return;
+            if (!favorites.length) {
+                favoriteList.innerHTML = '<div class="favorite-empty">暂无常用任务，点击“添加”或“保存当前”即可创建。</div>';
+            } else {
+                favoriteList.innerHTML = favorites.map((name, idx) => `
+                    <div class="favorite-row" data-idx="${idx}">
+                        <input data-idx="${idx}" value="${name}" aria-label="编辑常用任务 ${name}" />
+                        <button data-action="use" data-name="${name}">选用</button>
+                        <button data-action="delete" data-idx="${idx}">删除</button>
+                    </div>
+                `).join('');
+            }
+            if (favoriteDatalist) {
+                favoriteDatalist.innerHTML = favorites.map(name => `<option value="${name}"></option>`).join('');
+            }
+            if (favoriteUseCurrent) {
+                const val = (taskInput.value || '').trim();
+                favoriteUseCurrent.value = val ? `保存当前：${val}` : '输入任务后点击“保存当前”';
             }
         }
 
-        function writeData(data) {
-            localStorage.setItem('pomodoro-log', JSON.stringify(data));
+        function bindFavorites() {
+            loadFavorites();
+            renderFavorites();
+            favoriteAddBtn?.addEventListener('click', () => {
+                addFavorite(favoriteNameInput.value);
+                favoriteNameInput.value = '';
+            });
+            favoriteUseBtn?.addEventListener('click', () => addFavorite(taskInput.value));
+            taskInput.addEventListener('input', renderFavorites);
+            favoriteList?.addEventListener('input', (e) => {
+                if (e.target.matches('input[data-idx]')) {
+                    const idx = Number(e.target.dataset.idx);
+                    const next = e.target.value.trim();
+                    if (!next) {
+                        favorites.splice(idx, 1);
+                    } else {
+                        favorites[idx] = next;
+                    }
+                    persistFavorites();
+                }
+            });
+            favoriteList?.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.dataset.action === 'use') {
+                    const name = target.dataset.name;
+                    taskInput.value = name;
+                    renderFavorites();
+                }
+                if (target.dataset.action === 'delete') {
+                    const idx = Number(target.dataset.idx);
+                    favorites.splice(idx, 1);
+                    persistFavorites();
+                }
+            });
         }
 
         function addSecondToTask() {
-            const data = readData();
+            const log = readToday();
             const name = (taskInput.value || '杂项').trim();
-            if (!data.tasks[name]) data.tasks[name] = 0;
-            data.tasks[name] += 1;
-            writeData(data);
+            const today = todayKey();
+            log.dates[today][name] = (log.dates[today][name] || 0) + 1;
+            writeLog(log);
             renderTable();
         }
 
         function renameTask(oldName, newName) {
             const trimmed = (newName || '').trim() || '杂项';
-            const data = readData();
-            if (!data.tasks[oldName]) return;
-            const seconds = data.tasks[oldName];
-            delete data.tasks[oldName];
-            data.tasks[trimmed] = (data.tasks[trimmed] || 0) + seconds;
-            writeData(data);
+            const log = readToday();
+            const today = todayKey();
+            if (!log.dates[today][oldName]) return;
+            const seconds = log.dates[today][oldName];
+            delete log.dates[today][oldName];
+            log.dates[today][trimmed] = (log.dates[today][trimmed] || 0) + seconds;
+            writeLog(log);
             if ((taskInput.value || '杂项').trim() === oldName) {
                 taskInput.value = trimmed;
             }
@@ -743,43 +856,27 @@
             if (oldName !== newName) renameTask(oldName, newName);
         }
 
-        let live2dTimeout = null;
-        function triggerLive2d() {
-            if (!live2dCard || currentTheme !== 'xumo') return;
-            live2dCard.classList.add('active');
-            live2dStatus.textContent = '许墨：微笑点头';
-            if (live2dBubble) {
-                live2dBubble.style.opacity = '1';
-                live2dBubble.style.transform = 'translateY(0)';
-            }
-            if (live2dTimeout) clearTimeout(live2dTimeout);
-            live2dTimeout = setTimeout(() => {
-                live2dCard.classList.remove('active');
-                live2dStatus.textContent = '许墨：静候开始';
-                if (live2dBubble) {
-                    live2dBubble.style.opacity = '0';
-                    live2dBubble.style.transform = 'translateY(-6px)';
-                }
-            }, 1800);
-        }
-
         let chartInstance = null;
+        let monthChartInstance = null;
 
-        function renderChart(entries, total) {
-            if (!chartContainer) return;
+        function renderChart(entries, total, scope = 'day') {
+            const container = scope === 'month' ? monthChartContainer : chartContainer;
+            if (!container) return;
             if (typeof echarts === 'undefined') {
-                chartContainer.innerHTML = '<div class="chart-fallback">饼状图资源加载失败，请联网刷新或稍后重试。</div>';
+                container.innerHTML = '<div class="chart-fallback">饼状图资源加载失败，请联网刷新或稍后重试。</div>';
                 return;
             }
-            if (!chartInstance) {
-                chartInstance = echarts.init(chartContainer);
-                window.addEventListener('resize', () => chartInstance && chartInstance.resize());
+            let instance = scope === 'month' ? monthChartInstance : chartInstance;
+            if (!instance) {
+                instance = echarts.init(container);
+                window.addEventListener('resize', () => instance && instance.resize());
+                if (scope === 'month') monthChartInstance = instance; else chartInstance = instance;
             }
             const palette = getTheme().chartColors;
             const chartBg = getTheme().chartBackground;
             if (!entries.length) {
-                chartInstance.clear();
-                chartInstance.setOption({
+                instance.clear();
+                instance.setOption({
                     title: {
                         text: '暂无数据',
                         left: 'center',
@@ -791,7 +888,7 @@
                 return;
             }
             const data = entries.map(([name, sec]) => ({ value: sec, name }));
-            chartInstance.setOption({
+            instance.setOption({
                 backgroundColor: chartBg,
                 tooltip: {
                     trigger: 'item',
@@ -803,7 +900,7 @@
                     textStyle: { color: '#fdf4dd', fontFamily: 'Share Tech Mono', fontSize: 11 },
                 },
                 series: [{
-                    name: '今日分布',
+                    name: scope === 'month' ? '本月分布' : '今日分布',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     center: ['50%', '55%'],
@@ -829,14 +926,58 @@
             });
         }
 
+        function renderMonthlyTable(entries, total, dayCount) {
+            if (!monthTable) return;
+            if (!entries.length) {
+                monthTable.innerHTML = '<p style="color: var(--muted);">本月暂无记录，开始计时后再来看吧。</p>';
+                renderChart([], total, 'month');
+                return;
+            }
+            const rows = entries.map(([name, sec]) => {
+                const percent = total ? Math.round((sec / total) * 100) : 0;
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${fmtTime(sec)}</td>
+                        <td>${percent}%</td>
+                        <td><div class="progress"><span style="width:${percent}%;"></span></div></td>
+                    </tr>`;
+            }).join('');
+            monthTable.innerHTML = `
+                <table>
+                    <thead><tr><th>任务</th><th>累计时长</th><th>占比</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        function openMonthlyModal() {
+            const { entries, total, dayCount } = monthlySummary();
+            if (monthSummaryText) {
+                monthSummaryText.textContent = `本月累计 ${fmtTime(total)} ，涉及 ${dayCount} 天，平均每日 ${dayCount ? fmtTime(Math.round(total / dayCount)) : '00:00:00'}`;
+            }
+            renderMonthlyTable(entries, total, dayCount);
+            renderChart(entries, total, 'month');
+            if (monthlyModal) {
+                monthlyModal.classList.add('open');
+                monthlyModal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeMonthlyModal() {
+            if (!monthlyModal) return;
+            monthlyModal.classList.remove('open');
+            monthlyModal.setAttribute('aria-hidden', 'true');
+        }
+
         function renderTable() {
-            const data = readData();
-            const entries = Object.entries(data.tasks).sort((a, b) => b[1] - a[1]);
+            const log = readToday();
+            const todayTasks = log.dates[todayKey()] || {};
+            const entries = Object.entries(todayTasks).sort((a, b) => b[1] - a[1]);
             const total = entries.reduce((sum, [, sec]) => sum + sec, 0);
             summaryTotal.textContent = `今日累计 ${fmtTime(total)}`;
             if (!entries.length) {
                 taskTable.innerHTML = '<p style="color: var(--muted);">还没有记录，开始一次专注或正计时吧。</p>';
-                renderChart([], total);
+                renderChart(entries, total, 'day');
                 return;
             }
             const rows = entries.map(([name, sec]) => {
@@ -856,7 +997,7 @@
                     </thead>
                     <tbody>${rows}</tbody>
                 </table>`;
-            renderChart(entries, total);
+            renderChart(entries, total, 'day');
         }
 
         function updateDisplay() {
@@ -909,7 +1050,6 @@
             if (state.running) return;
             state.running = true;
             startPauseBtn.textContent = '暂停';
-            triggerLive2d();
             tick();
             state.timerId = setInterval(tick, 1000);
         }
@@ -976,17 +1116,18 @@
         function init() {
             initDate();
             initThemes();
-            const savedImages = loadXumoImages();
-            if (xumoBgInput) xumoBgInput.value = savedImages.bg;
-            if (xumoFaceInput) xumoFaceInput.value = savedImages.face;
-            applyXumoImages();
             bindInputs();
+            bindFavorites();
             updateDisplay();
             tabs.forEach(tab => tab.addEventListener('click', () => handleTabSwitch(tab.dataset.type)));
             modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
             startPauseBtn.addEventListener('click', toggleStartPause);
             resetBtn.addEventListener('click', resetTimer);
-            applyXumoBtn?.addEventListener('click', () => applyXumoImages(true));
+            openMonthlyBtn?.addEventListener('click', openMonthlyModal);
+            closeMonthlyBtn?.addEventListener('click', closeMonthlyModal);
+            monthlyModal?.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-backdrop')) closeMonthlyModal();
+            });
             taskTable.addEventListener('change', (e) => commitNameChange(e.target));
             taskTable.addEventListener('focusout', (e) => commitNameChange(e.target));
             taskTable.addEventListener('keydown', (e) => {
@@ -995,7 +1136,6 @@
                     commitNameChange(e.target);
                 }
             });
-            display.addEventListener('click', triggerLive2d);
             renderTable();
         }
 
