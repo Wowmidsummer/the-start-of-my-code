@@ -1,14 +1,1354 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-Hans">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>番茄钟与任务追踪</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
+        :root {
+            --accent: #ff7a18;
+            --accent-2: #faae2b;
+            --bg: #0f141b;
+            --panel: #f6f2e9;
+            --panel-2: #ede6d9;
+            --muted: #6b5947;
+            --text: #2b1b0f;
+            --chart-bg: #f7f3ec;
+        }
+        body.theme-default { }
+        body.theme-stardew {
+            --accent: #dca45f;
+            --accent-2: #b67a3d;
+            --bg: #18120d;
+            --panel: #f2e6d8;
+            --panel-2: #e5d2b9;
+            --muted: #7a5b3b;
+            --text: #2d1b0d;
+            --chart-bg: #f1e5d7;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Press Start 2P', 'Share Tech Mono', 'Noto Sans SC', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 38px 30px 52px;
+            letter-spacing: 0.3px;
+        }
+        .top-nav {
+            max-width: 1600px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--panel);
+            padding: 14px 16px;
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 6px 6px 0 rgba(0,0,0,0.2);
+        }
+        .brand {
+            font-size: 13px;
+            color: var(--text);
+            letter-spacing: 1.2px;
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        .theme-switch {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .nav-extra {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-btn {
+            padding: 10px 14px 9px;
+            border: 2px solid #1f1f1f;
+            background: var(--panel);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 0 0 2px #000 inset, 3px 3px 0 rgba(0,0,0,0.45);
+        }
+        .theme-btn {
+            padding: 10px 12px 9px;
+            border: 2px solid #222;
+            background: #f4eee4;
+            color: #4a331f;
+            cursor: pointer;
+            font-size: 10px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .theme-btn.active {
+            background: linear-gradient(135deg, var(--panel-2), var(--panel));
+            color: var(--text);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent) inset;
+        }
+        .theme-note {
+            max-width: 1600px;
+            margin: 0 auto 18px;
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            background: var(--panel);
+            padding: 10px 12px;
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 6px 6px 0 rgba(0,0,0,0.2);
+        }
+        h1, h2 { margin: 0; }
+        h1 { font-size: 20px; }
+        h2 { font-size: 15px; }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr);
+            gap: 28px;
+        }
+        @media (max-width: 960px) {
+            .container { grid-template-columns: 1fr; }
+        }
+        .nav-card {
+            max-width: 1600px;
+            margin: 0 auto 12px;
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 8px 8px 0 rgba(0,0,0,0.45);
+            padding: 14px 16px;
+            color: var(--text);
+            font-size: 11px;
+        }
+        .image-help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-help-grid label {
+            color: var(--muted);
+            font-size: 10px;
+        }
+        .image-help-grid input {
+            background: #fbf7f0;
+            border: 2px solid #d7cbb9;
+            color: var(--text);
+            padding: 10px 12px 9px;
+            font-size: 11px;
+            font-family: 'Share Tech Mono', 'Press Start 2P', monospace;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .image-help-grid button {
+            margin-top: 2px;
+            padding: 11px 12px 9px;
+            border: 2px solid var(--accent);
+            background: linear-gradient(145deg, #ff8c26, #ff5a1f);
+            color: #0a0a0a;
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 0 0 2px #000, 4px 4px 0 rgba(0,0,0,0.6);
+            text-transform: uppercase;
+        }
+        .image-help-note {
+            grid-column: 1 / -1;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.6;
+        }
+        .card {
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border: 2px solid #1f1f1f;
+            box-shadow:
+                0 0 0 2px #000,
+                8px 8px 0 rgba(255,122,24,0.15);
+            padding: 22px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+        .date {
+            color: var(--muted);
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .tab {
+            padding: 14px 12px 12px;
+            border: 2px solid #222;
+            background: #fbf8f2;
+            color: var(--muted);
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 0 2px #000 inset;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .tab.active {
+            color: var(--text);
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            box-shadow: 0 0 0 2px var(--accent) inset, 4px 4px 0 rgba(0,0,0,0.45);
+            transform: translateY(-2px);
+        }
+        .timer {
+            font-size: 82px;
+            text-align: center;
+            margin: 22px 0 10px;
+            letter-spacing: 3px;
+            color: var(--accent-2);
+            text-shadow: 0 0 8px rgba(255,122,24,0.5);
+        }
+        .label {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 14px;
+        }
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+        .btn {
+            padding: 13px 18px 11px;
+            border: 2px solid var(--accent);
+            background: linear-gradient(145deg, #ff8c26, #ff5a1f);
+            color: #0a0a0a;
+            cursor: pointer;
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 0 2px #000, 4px 4px 0 rgba(0,0,0,0.6);
+            text-transform: uppercase;
+            transition: transform 0.08s ease, box-shadow 0.1s ease;
+        }
+        .btn:hover { box-shadow: 0 0 0 2px #000, 3px 3px 0 rgba(0,0,0,0.8); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 0 0 2px #000, 2px 2px 0 rgba(0,0,0,0.8); }
+        .btn.ghost {
+            background: #f3ede4;
+            color: var(--text);
+            border-color: #d3c6b4;
+            box-shadow: 0 0 0 2px #000, 4px 4px 0 rgba(255,122,24,0.2);
+        }
+        .btn.secondary {
+            background: linear-gradient(145deg, #ffb52c, #ff7a18);
+            color: #0c0c0c;
+        }
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .mode-toggle button {
+            padding: 9px 12px 8px;
+            border: 2px solid #222;
+            background: #f6f1e7;
+            color: #4a331f;
+            cursor: pointer;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .mode-toggle button.active {
+            color: var(--text);
+            background: linear-gradient(145deg, var(--panel), var(--panel-2));
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent) inset;
+        }
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        input, select {
+            background: #fbf7f0;
+            border: 2px solid #1f1f1f;
+            color: var(--text);
+            padding: 12px 14px 10px;
+            font-size: 12px;
+            flex: 1;
+            min-width: 240px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .task-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            gap: 10px;
+            width: 100%;
+        }
+        .favorite-trigger {
+            position: relative;
+            padding: 10px 12px 9px;
+            border: 2px solid #1f1f1f;
+            background: var(--panel);
+            color: var(--muted);
+            font-size: 10px;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            box-shadow: 0 0 0 2px #000 inset, 3px 3px 0 rgba(0,0,0,0.45);
+            min-width: 120px;
+            text-align: center;
+        }
+        .favorite-trigger:hover .favorite-panel,
+        .favorite-panel:hover {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        .favorite-panel {
+            position: absolute;
+            right: 0;
+            top: 110%;
+            width: 340px;
+            background: var(--panel);
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 8px 8px 0 rgba(0,0,0,0.5);
+            padding: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-6px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            z-index: 10;
+        }
+        .favorite-panel h3 {
+            margin: 0 0 8px;
+            font-size: 12px;
+            color: var(--text);
+        }
+        .favorite-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .favorite-actions button {
+            padding: 10px 12px 9px;
+            border: 2px solid var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #0a0a0a;
+            cursor: pointer;
+            font-size: 10px;
+            box-shadow: 0 0 0 2px #000 inset, 3px 3px 0 rgba(0,0,0,0.4);
+        }
+        .favorite-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 220px;
+            overflow: auto;
+        }
+        .favorite-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 6px;
+            align-items: center;
+        }
+        .favorite-row button {
+            padding: 8px 10px 7px;
+            border: 2px solid #1f1f1f;
+            background: #f8f2e9;
+            color: #4a331f;
+            cursor: pointer;
+            font-size: 9px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .favorite-empty {
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center;
+            padding: 8px 4px;
+        }
+        label { color: var(--muted); font-size: 11px; display: block; margin-bottom: 6px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        th, td {
+            padding: 11px 8px;
+            text-align: left;
+            border-bottom: 2px solid #1f1f1f;
+        }
+        th { color: var(--muted); font-weight: 700; letter-spacing: 1px; }
+        td input {
+            width: 100%;
+            background: #fbf7f0;
+            border: 2px solid #d7cbb9;
+            color: var(--text);
+            padding: 9px 10px 8px;
+            font-size: 11px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .task-time-input {
+            min-width: 110px;
+        }
+        .table-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .action-btn {
+            padding: 7px 10px 6px;
+            border: 2px solid #1f1f1f;
+            background: #f8f2e9;
+            color: #4a331f;
+            cursor: pointer;
+            font-size: 10px;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .progress {
+            height: 10px;
+            border: 2px solid #1f1f1f;
+            background: #f2ebde;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .progress span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #ff7a18, #ffb52c);
+        }
+        .pill {
+            display: inline-block;
+            padding: 6px 10px 5px;
+            background: var(--accent);
+            border: 2px solid #000;
+            color: #0a0a0a;
+            font-size: 10px;
+            letter-spacing: 0.8px;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.6);
+            text-transform: uppercase;
+        }
+        .footer-note {
+            color: var(--muted);
+            font-size: 9px;
+            margin-top: 10px;
+            text-align: right;
+            letter-spacing: 0.5px;
+        }
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 30;
+        }
+        .modal.open { display: flex; }
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+        }
+        .modal-card {
+            position: relative;
+            background: var(--panel);
+            border: 2px solid #1f1f1f;
+            box-shadow: 0 0 0 2px #000, 10px 10px 0 rgba(0,0,0,0.55);
+            padding: 18px;
+            max-width: 960px;
+            width: 94%;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .modal-close {
+            border: 2px solid #222;
+            background: #f4eee4;
+            color: #4a331f;
+            padding: 8px 10px 7px;
+            cursor: pointer;
+            box-shadow: 0 0 0 2px #000 inset;
+        }
+        .modal-highlight {
+            margin: 12px 0;
+            padding: 10px 12px;
+            border: 2px dashed #1f1f1f;
+            color: var(--muted);
+            font-size: 11px;
+        }
+        .chart-shell {
+            margin-top: 4px;
+            border: 2px solid #1f1f1f;
+            background: var(--chart-bg);
+            box-shadow: 0 0 0 2px #000 inset, 4px 4px 0 rgba(255,122,24,0.15);
+            padding: 10px;
+        }
+        body.theme-stardew .chart-shell {
+            background: var(--chart-bg);
+            box-shadow: 0 0 0 2px #000 inset, 6px 6px 0 rgba(156,107,63,0.28);
+        }
+        #chart {
+            width: 100%;
+            height: 380px;
+        }
+        .chart-fallback {
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+            padding: 32px 12px;
+            border: 2px dashed #1f1f1f;
+            background: #fbf7f0;
+        }
+    </style>
 </head>
+<body class="theme-default">
+    <header class="top-nav">
+        <div class="brand">像素番茄 · 多主题</div>
+        <div class="nav-extra">
+            <div class="theme-switch" id="themeSwitcher">
+                <button class="theme-btn active" data-theme="default">像素橙</button>
+                <button class="theme-btn" data-theme="stardew">星露谷·泥土</button>
+            </div>
+            <button class="nav-btn" id="openWeekly">周报告</button>
+            <button class="nav-btn" id="openMonthly">月度报告</button>
+        </div>
+    </header>
+    <div class="theme-note">切换皮肤会同步更新背景、控件色调与饼状图配色；顶部可查看周报告与月度报告，便于核对周期数据。</div>
+    <div class="container">
+        <section class="card">
+            <div class="header">
+                <div>
+                    <h1>番茄钟 & 正计时</h1>
+                    <div class="date" id="today"></div>
+                </div>
+                <span class="pill focus" id="sessionLabel">番茄钟</span>
+            </div>
 
-<body>
-    i love u
+            <div class="tabs" aria-label="计时模式切换">
+                <button class="tab active" data-type="pomodoro">番茄钟</button>
+                <button class="tab" data-type="stopwatch">正计时</button>
+            </div>
+
+            <div class="label" id="modeLabel">25 分钟专注</div>
+            <div class="timer" id="display">25:00</div>
+
+            <div class="actions">
+                <button class="btn primary" id="startPause">开始</button>
+                <button class="btn ghost" id="reset">重置</button>
+            </div>
+
+            <div class="mode-toggle" id="pomodoroModes">
+                <button data-mode="focus" class="active">专注 25'</button>
+                <button data-mode="short">小憩 5'</button>
+                <button data-mode="long">长休 15'</button>
+            </div>
+
+            <div class="input-group">
+                <label for="taskInput">当前任务</label>
+                <div class="task-input-wrap">
+                    <input id="taskInput" list="favoriteTasks" placeholder="输入任务名称，例如：整理周报" autocomplete="off">
+                    <div class="favorite-trigger">历史常用 ▾
+                        <div class="favorite-panel">
+                            <h3>选择 / 编辑常用任务</h3>
+                            <div class="favorite-actions">
+                                <input id="favoriteNameInput" placeholder="新增常用任务，例如：整理周报">
+                                <button id="favoriteAddBtn">添加</button>
+                            </div>
+                            <div class="favorite-actions" style="grid-template-columns: 1fr auto; margin-top: -4px;">
+                                <input id="favoriteUseCurrent" placeholder="使用当前输入保存为常用" readonly>
+                                <button id="favoriteUseBtn" aria-label="保存当前任务到常用">保存当前</button>
+                            </div>
+                            <div id="favoriteList" class="favorite-list"></div>
+                        </div>
+                    </div>
+                    <datalist id="favoriteTasks"></datalist>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="focusLength">自定义时长（分钟，可选）</label>
+                <input id="focusLength" type="number" min="1" max="180" placeholder="专注时长，例如 30">
+                <input id="shortLength" type="number" min="1" max="60" placeholder="小憩时长，例如 5">
+                <input id="longLength" type="number" min="1" max="90" placeholder="长休时长，例如 15">
+            </div>
+            <div class="footer-note">每日数据自动刷新，未命名任务将归到“杂项”。</div>
+        </section>
+
+        <section class="card">
+            <div class="header">
+                <h2>任务统计</h2>
+                <div class="date" id="summaryTotal">今日累计 00:00:00</div>
+            </div>
+            <div class="chart-shell">
+                <div id="chart"></div>
+            </div>
+            <div id="taskTable"></div>
+        </section>
+    </div>
+
+    <div class="modal" id="monthlyModal" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>月度报告</h2>
+                <button class="modal-close" id="closeMonthly">关闭</button>
+            </div>
+            <div class="modal-highlight" id="monthSummaryText">加载中...</div>
+            <div class="chart-shell">
+                <div id="monthChart" style="width:100%;height:320px;"></div>
+            </div>
+            <div id="monthTable" class="table"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="weeklyModal" aria-hidden="true">
+        <div class="modal-backdrop"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>周报告</h2>
+                <button class="modal-close" id="closeWeekly">关闭</button>
+            </div>
+            <div class="modal-highlight" id="weekSummaryText">加载中...</div>
+            <div class="chart-shell">
+                <div id="weekChart" style="width:100%;height:320px;"></div>
+            </div>
+            <div id="weekTable" class="table"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script>
+        const tabs = document.querySelectorAll('.tab');
+        const modeButtons = document.querySelectorAll('#pomodoroModes button');
+        const display = document.getElementById('display');
+        const modeLabel = document.getElementById('modeLabel');
+        const startPauseBtn = document.getElementById('startPause');
+        const resetBtn = document.getElementById('reset');
+        const sessionLabel = document.getElementById('sessionLabel');
+        const todayEl = document.getElementById('today');
+        const taskInput = document.getElementById('taskInput');
+        const summaryTotal = document.getElementById('summaryTotal');
+        const taskTable = document.getElementById('taskTable');
+        const chartContainer = document.getElementById('chart');
+        const monthChartContainer = document.getElementById('monthChart');
+        const themeButtons = document.querySelectorAll('.theme-btn');
+        const openWeeklyBtn = document.getElementById('openWeekly');
+        const openMonthlyBtn = document.getElementById('openMonthly');
+        const closeMonthlyBtn = document.getElementById('closeMonthly');
+        const monthlyModal = document.getElementById('monthlyModal');
+        const weeklyModal = document.getElementById('weeklyModal');
+        const monthSummaryText = document.getElementById('monthSummaryText');
+        const weekSummaryText = document.getElementById('weekSummaryText');
+        const monthTable = document.getElementById('monthTable');
+        const weekTable = document.getElementById('weekTable');
+        const weekChartContainer = document.getElementById('weekChart');
+        const favoriteList = document.getElementById('favoriteList');
+        const favoriteAddBtn = document.getElementById('favoriteAddBtn');
+        const favoriteNameInput = document.getElementById('favoriteNameInput');
+        const favoriteUseCurrent = document.getElementById('favoriteUseCurrent');
+        const favoriteUseBtn = document.getElementById('favoriteUseBtn');
+        const favoriteDatalist = document.getElementById('favoriteTasks');
+        const live2dCard = null;
+        const live2dStatus = null;
+        const live2dBubble = null;
+        const lengthInputs = {
+            focus: document.getElementById('focusLength'),
+            short: document.getElementById('shortLength'),
+            long: document.getElementById('longLength'),
+        };
+
+        const defaults = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+        let settings = { ...defaults };
+
+        const themes = {
+            default: {
+                className: 'theme-default',
+                chartColors: ['#ff7a18', '#faae2b', '#5e6ad2', '#35c98d', '#2b2b2b', '#f45c43', '#46c7ff', '#ff9f43'],
+                chartBackground: '#f7f3ec',
+            },
+            stardew: {
+                className: 'theme-stardew',
+                chartColors: ['#6b3e26', '#9c6b3f', '#c18b56', '#d8b07a', '#e3cba4', '#7ea04d', '#bcd364', '#4a2f1a'],
+                chartBackground: '#f1e5d7',
+            },
+        };
+        let currentTheme = 'default';
+
+        const state = {
+            type: 'pomodoro',
+            mode: 'focus',
+            remaining: settings.focus,
+            elapsed: 0,
+            running: false,
+            timerId: null,
+        };
+
+        function getTheme() {
+            return themes[currentTheme] || themes.default;
+        }
+
+        function applyTheme(name) {
+            if (!themes[name]) return;
+            currentTheme = name;
+            document.body.classList.remove(...Object.values(themes).map(t => t.className));
+            document.body.classList.add(themes[name].className);
+            themeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.theme === name));
+            renderTable();
+            if (monthlyModal?.classList.contains('open')) {
+                openMonthlyModal();
+            }
+            if (weeklyModal?.classList.contains('open')) {
+                openWeeklyModal();
+            }
+        }
+
+        function fmtTime(sec) {
+            const h = Math.floor(sec / 3600).toString().padStart(2, '0');
+            const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(sec % 60).toString().padStart(2, '0');
+            return h === '00' ? `${m}:${s}` : `${h}:${m}:${s}`;
+        }
+
+        function fmtRecordTime(sec) {
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = Math.floor(sec % 60);
+            if (h > 0) return `${h}h${m}min`;
+            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function fmtEditableTime(sec) {
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60).toString().padStart(2, '0');
+            const s = Math.floor(sec % 60).toString().padStart(2, '0');
+            return h > 0 ? `${h}:${m}:${s}` : `${m}:${s}`;
+        }
+
+        function parseTimeInput(raw) {
+            if (!raw) return null;
+            const str = raw.trim().toLowerCase();
+            if (!str) return null;
+            let h = 0, m = 0, s = 0;
+            const colonParts = str.split(':').filter(Boolean);
+            if (colonParts.length === 3) {
+                h = Number(colonParts[0]);
+                m = Number(colonParts[1]);
+                s = Number(colonParts[2]);
+            } else if (colonParts.length === 2) {
+                m = Number(colonParts[0]);
+                s = Number(colonParts[1]);
+            } else {
+                const match = str.match(/^(?:(\d+)h)?\s*(\d+)?\s*(?:m|min)?\s*(\d+)?\s*(?:s)?$/);
+                if (match) {
+                    h = Number(match[1] || 0);
+                    if (match[2]) m = Number(match[2]);
+                    if (match[3]) s = Number(match[3]);
+                    if (!match[1] && !match[3] && match[2] && !str.includes('min') && !str.includes('m')) {
+                        s = 0;
+                    }
+                } else if (!Number.isNaN(Number(str))) {
+                    m = Number(str);
+                } else {
+                    return null;
+                }
+            }
+            if (![h, m, s].every(Number.isFinite) || h < 0 || m < 0 || s < 0) return null;
+            return h * 3600 + m * 60 + s;
+        }
+
+        function todayKey() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function monthKey() {
+            return new Date().toISOString().slice(0, 7);
+        }
+
+        function startOfWeekKey() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = (day + 6) % 7; // Monday as start
+            now.setHours(0, 0, 0, 0);
+            now.setDate(now.getDate() - diff);
+            return now.toISOString().slice(0, 10);
+        }
+
+        function readLog() {
+            const raw = localStorage.getItem('pomodoro-log');
+            if (!raw) return { dates: {} };
+            try {
+                const parsed = JSON.parse(raw);
+                if (parsed.dates) return { dates: parsed.dates };
+                if (parsed.date && parsed.tasks) {
+                    return { dates: { [parsed.date]: parsed.tasks } };
+                }
+            } catch { /* ignore */ }
+            return { dates: {} };
+        }
+
+        function ensureToday(log) {
+            const key = todayKey();
+            if (!log.dates[key]) log.dates[key] = {};
+            return log;
+        }
+
+        function writeLog(log) {
+            localStorage.setItem('pomodoro-log', JSON.stringify(log));
+        }
+
+        function readToday() {
+            const log = ensureToday(readLog());
+            writeLog(log);
+            return log;
+        }
+
+        function monthlySummary() {
+            const log = readLog();
+            const currentMonth = monthKey();
+            const tasks = {};
+            let dayCount = 0;
+            let total = 0;
+            Object.entries(log.dates).forEach(([date, items]) => {
+                if (!date.startsWith(currentMonth)) return;
+                const dayTotal = Object.values(items || {}).reduce((sum, sec) => sum + sec, 0);
+                if (dayTotal > 0) dayCount += 1;
+                Object.entries(items || {}).forEach(([name, sec]) => {
+                    tasks[name] = (tasks[name] || 0) + sec;
+                    total += sec;
+                });
+            });
+            const entries = Object.entries(tasks).sort((a, b) => b[1] - a[1]);
+            return { entries, total, dayCount };
+        }
+
+        function weeklySummary() {
+            const log = readLog();
+            const startKey = startOfWeekKey();
+            const tasks = {};
+            let dayCount = 0;
+            let total = 0;
+            Object.entries(log.dates).forEach(([date, items]) => {
+                if (date < startKey) return;
+                const dayTotal = Object.values(items || {}).reduce((sum, sec) => sum + sec, 0);
+                if (dayTotal > 0) dayCount += 1;
+                Object.entries(items || {}).forEach(([name, sec]) => {
+                    tasks[name] = (tasks[name] || 0) + sec;
+                    total += sec;
+                });
+            });
+            const entries = Object.entries(tasks).sort((a, b) => b[1] - a[1]);
+            return { entries, total, dayCount };
+        }
+
+        const FAVORITES_KEY = 'pomodoro-favorites';
+        let favorites = [];
+
+        function loadFavorites() {
+            try {
+                const raw = localStorage.getItem(FAVORITES_KEY);
+                if (raw) favorites = JSON.parse(raw);
+                if (!Array.isArray(favorites)) favorites = [];
+            } catch { favorites = []; }
+            if (!favorites.length) favorites = ['整理周报', '复盘 & 总结', '邮件清理'];
+        }
+
+        function persistFavorites() {
+            localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        function addFavorite(name) {
+            const trimmed = (name || '').trim();
+            if (!trimmed) return;
+            favorites = [trimmed, ...favorites.filter(item => item !== trimmed)].slice(0, 30);
+            persistFavorites();
+        }
+
+        function renderFavorites() {
+            if (!favoriteList) return;
+            if (!favorites.length) {
+                favoriteList.innerHTML = '<div class="favorite-empty">暂无常用任务，点击“添加”或“保存当前”即可创建。</div>';
+            } else {
+                favoriteList.innerHTML = favorites.map((name, idx) => `
+                    <div class="favorite-row" data-idx="${idx}">
+                        <input data-idx="${idx}" value="${name}" aria-label="编辑常用任务 ${name}" />
+                        <button data-action="use" data-name="${name}">选用</button>
+                        <button data-action="delete" data-idx="${idx}">删除</button>
+                    </div>
+                `).join('');
+            }
+            if (favoriteDatalist) {
+                favoriteDatalist.innerHTML = favorites.map(name => `<option value="${name}"></option>`).join('');
+            }
+            if (favoriteUseCurrent) {
+                const val = (taskInput.value || '').trim();
+                favoriteUseCurrent.value = val ? `保存当前：${val}` : '输入任务后点击“保存当前”';
+            }
+        }
+
+        function bindFavorites() {
+            loadFavorites();
+            renderFavorites();
+            favoriteAddBtn?.addEventListener('click', () => {
+                addFavorite(favoriteNameInput.value);
+                favoriteNameInput.value = '';
+            });
+            favoriteUseBtn?.addEventListener('click', () => addFavorite(taskInput.value));
+            taskInput.addEventListener('input', renderFavorites);
+            favoriteList?.addEventListener('input', (e) => {
+                if (e.target.matches('input[data-idx]')) {
+                    const idx = Number(e.target.dataset.idx);
+                    const next = e.target.value.trim();
+                    if (!next) {
+                        favorites.splice(idx, 1);
+                    } else {
+                        favorites[idx] = next;
+                    }
+                    persistFavorites();
+                }
+            });
+            favoriteList?.addEventListener('click', (e) => {
+                const target = e.target;
+                if (target.dataset.action === 'use') {
+                    const name = target.dataset.name;
+                    taskInput.value = name;
+                    renderFavorites();
+                }
+                if (target.dataset.action === 'delete') {
+                    const idx = Number(target.dataset.idx);
+                    favorites.splice(idx, 1);
+                    persistFavorites();
+                }
+            });
+        }
+
+        function addSecondToTask() {
+            const log = readToday();
+            const name = (taskInput.value || '杂项').trim();
+            const today = todayKey();
+            log.dates[today][name] = (log.dates[today][name] || 0) + 1;
+            writeLog(log);
+            renderTable();
+        }
+
+        function deleteTask(name) {
+            const log = readToday();
+            const today = todayKey();
+            if (log.dates[today][name] !== undefined) {
+                delete log.dates[today][name];
+                writeLog(log);
+                renderTable();
+            }
+        }
+
+        function updateTaskTime(name, seconds) {
+            const log = readToday();
+            const today = todayKey();
+            if (!log.dates[today][name]) return;
+            if (seconds <= 0) {
+                delete log.dates[today][name];
+            } else {
+                log.dates[today][name] = seconds;
+            }
+            writeLog(log);
+            renderTable();
+        }
+
+        function renameTask(oldName, newName) {
+            const trimmed = (newName || '').trim() || '杂项';
+            const log = readToday();
+            const today = todayKey();
+            if (!log.dates[today][oldName]) return;
+            const seconds = log.dates[today][oldName];
+            delete log.dates[today][oldName];
+            log.dates[today][trimmed] = (log.dates[today][trimmed] || 0) + seconds;
+            writeLog(log);
+            if ((taskInput.value || '杂项').trim() === oldName) {
+                taskInput.value = trimmed;
+            }
+            renderTable();
+        }
+
+        function commitNameChange(target) {
+            if (!target.classList.contains('task-name-input')) return;
+            const oldName = target.dataset.name;
+            const newName = target.value;
+            if (oldName !== newName) renameTask(oldName, newName);
+        }
+
+        function commitTimeChange(target) {
+            if (!target.classList.contains('task-time-input')) return;
+            const name = target.dataset.name;
+            const original = Number(target.dataset.seconds) || 0;
+            const parsed = parseTimeInput(target.value);
+            if (parsed === null) {
+                target.value = fmtRecordTime(original);
+                return;
+            }
+            updateTaskTime(name, parsed);
+        }
+
+        let chartInstance = null;
+        let monthChartInstance = null;
+        let weekChartInstance = null;
+
+        function renderChart(entries, total, scope = 'day') {
+            const container = scope === 'month' ? monthChartContainer : scope === 'week' ? weekChartContainer : chartContainer;
+            if (!container) return;
+            if (typeof echarts === 'undefined') {
+                container.innerHTML = '<div class="chart-fallback">饼状图资源加载失败，请联网刷新或稍后重试。</div>';
+                return;
+            }
+            let instance = scope === 'month' ? monthChartInstance : scope === 'week' ? weekChartInstance : chartInstance;
+            if (!instance) {
+                instance = echarts.init(container);
+                window.addEventListener('resize', () => instance && instance.resize());
+                if (scope === 'month') monthChartInstance = instance; else if (scope === 'week') weekChartInstance = instance; else chartInstance = instance;
+            }
+            const palette = getTheme().chartColors;
+            const chartBg = getTheme().chartBackground;
+            const chartText = getComputedStyle(document.body).getPropertyValue('--text').trim() || '#2b1b0f';
+            if (!entries.length) {
+                instance.clear();
+                instance.setOption({
+                    title: {
+                        text: '暂无数据',
+                        left: 'center',
+                        top: 'middle',
+                        textStyle: { color: '#6a6a6a', fontSize: 12, fontFamily: 'Share Tech Mono' },
+                    },
+                    backgroundColor: chartBg,
+                });
+                return;
+            }
+            const data = entries.map(([name, sec]) => ({ value: sec, name }));
+            instance.setOption({
+                backgroundColor: chartBg,
+                tooltip: {
+                    trigger: 'item',
+                    formatter: ({ name, value, percent }) => `${name}: ${fmtRecordTime(value)} (${Math.round(percent)}%)`,
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center',
+                    textStyle: { color: chartText, fontFamily: 'Share Tech Mono', fontSize: 11 },
+                },
+                series: [{
+                    name: scope === 'month' ? '本月分布' : scope === 'week' ? '本周分布' : '今日分布',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '55%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderColor: chartBg,
+                        borderWidth: 2,
+                    },
+                    label: { show: false, position: 'center' },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 18,
+                            fontWeight: 'bold',
+                            color: chartText,
+                            formatter: '{b}\n{d}%'
+                        },
+                    },
+                    labelLine: { show: false },
+                    data,
+                    color: palette,
+                }],
+            });
+        }
+
+        function renderMonthlyTable(entries, total, dayCount) {
+            if (!monthTable) return;
+            if (!entries.length) {
+                monthTable.innerHTML = '<p style="color: var(--muted);">本月暂无记录，开始计时后再来看吧。</p>';
+                renderChart([], total, 'month');
+                return;
+            }
+            const rows = entries.map(([name, sec]) => {
+                const percent = total ? Math.round((sec / total) * 100) : 0;
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${fmtRecordTime(sec)}</td>
+                        <td>${percent}%</td>
+                        <td><div class="progress"><span style="width:${percent}%;"></span></div></td>
+                    </tr>`;
+            }).join('');
+            monthTable.innerHTML = `
+                <table>
+                    <thead><tr><th>任务</th><th>累计时长</th><th>占比</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        function renderWeeklyTable(entries, total, dayCount) {
+            if (!weekTable) return;
+            if (!entries.length) {
+                weekTable.innerHTML = '<p style="color: var(--muted);">本周暂无记录，开始计时后再来看吧。</p>';
+                renderChart([], total, 'week');
+                return;
+            }
+            const rows = entries.map(([name, sec]) => {
+                const percent = total ? Math.round((sec / total) * 100) : 0;
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${fmtRecordTime(sec)}</td>
+                        <td>${percent}%</td>
+                        <td><div class="progress"><span style="width:${percent}%;"></span></div></td>
+                    </tr>`;
+            }).join('');
+            weekTable.innerHTML = `
+                <table>
+                    <thead><tr><th>任务</th><th>累计时长</th><th>占比</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        function openMonthlyModal() {
+            const { entries, total, dayCount } = monthlySummary();
+            if (monthSummaryText) {
+                monthSummaryText.textContent = `本月累计 ${fmtRecordTime(total)} ，涉及 ${dayCount} 天，平均每日 ${dayCount ? fmtRecordTime(Math.round(total / dayCount)) : '00:00'}`;
+            }
+            renderMonthlyTable(entries, total, dayCount);
+            renderChart(entries, total, 'month');
+            if (monthlyModal) {
+                monthlyModal.classList.add('open');
+                monthlyModal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeMonthlyModal() {
+            if (!monthlyModal) return;
+            monthlyModal.classList.remove('open');
+            monthlyModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function openWeeklyModal() {
+            const { entries, total, dayCount } = weeklySummary();
+            if (weekSummaryText) {
+                weekSummaryText.textContent = `本周累计 ${fmtRecordTime(total)} ，涉及 ${dayCount} 天，平均每日 ${dayCount ? fmtRecordTime(Math.round(total / dayCount)) : '00:00'}`;
+            }
+            renderWeeklyTable(entries, total, dayCount);
+            renderChart(entries, total, 'week');
+            if (weeklyModal) {
+                weeklyModal.classList.add('open');
+                weeklyModal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeWeeklyModal() {
+            if (!weeklyModal) return;
+            weeklyModal.classList.remove('open');
+            weeklyModal.setAttribute('aria-hidden', 'true');
+        }
+
+        function renderTable() {
+            const log = readToday();
+            const todayTasks = log.dates[todayKey()] || {};
+            const entries = Object.entries(todayTasks).sort((a, b) => b[1] - a[1]);
+            const total = entries.reduce((sum, [, sec]) => sum + sec, 0);
+            summaryTotal.textContent = `今日累计 ${fmtRecordTime(total)}`;
+            if (!entries.length) {
+                taskTable.innerHTML = '<p style="color: var(--muted);">还没有记录，开始一次专注或正计时吧。</p>';
+                renderChart(entries, total, 'day');
+                if (weeklyModal?.classList.contains('open')) openWeeklyModal();
+                if (monthlyModal?.classList.contains('open')) openMonthlyModal();
+                return;
+            }
+            const rows = entries.map(([name, sec]) => {
+                const percent = total ? Math.round((sec / total) * 100) : 0;
+                return `
+                    <tr data-name="${name}">
+                        <td><input class="task-name-input" data-name="${name}" value="${name}" aria-label="编辑任务名称" /></td>
+                        <td><input class="task-time-input" data-name="${name}" data-seconds="${sec}" value="${fmtRecordTime(sec)}" aria-label="编辑任务时长" /></td>
+                        <td>${percent}%</td>
+                        <td><div class="progress"><span style="width:${percent}%;"></span></div></td>
+                        <td><div class="table-actions"><button class="action-btn" data-action="delete" data-name="${name}">删除</button></div></td>
+                    </tr>`;
+            }).join('');
+            taskTable.innerHTML = `
+                <table>
+                    <thead>
+                        <tr><th>任务</th><th>时长（可改）</th><th>占比</th><th></th><th>操作</th></tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+            renderChart(entries, total, 'day');
+            if (weeklyModal?.classList.contains('open')) openWeeklyModal();
+            if (monthlyModal?.classList.contains('open')) openMonthlyModal();
+        }
+
+        function updateDisplay() {
+            if (state.type === 'pomodoro') {
+                display.textContent = fmtTime(state.remaining);
+            } else {
+                display.textContent = fmtTime(state.elapsed);
+            }
+        }
+
+        function setMode(newMode) {
+            state.mode = newMode;
+            state.remaining = settings[newMode];
+            state.elapsed = 0;
+            updateDisplay();
+            document.querySelectorAll('#pomodoroModes button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === newMode);
+            });
+            sessionLabel.textContent = newMode === 'focus' ? '番茄钟' : newMode === 'short' ? '小憩' : '长休';
+            const minutes = Math.round(settings[newMode] / 60);
+            modeLabel.textContent = `${minutes} 分钟${newMode === 'focus' ? '专注' : '放松'}`;
+        }
+
+        function stopTimer() {
+            if (state.timerId) clearInterval(state.timerId);
+            state.timerId = null;
+            state.running = false;
+            startPauseBtn.textContent = '开始';
+        }
+
+        function tick() {
+            if (state.type === 'pomodoro') {
+                if (state.remaining <= 0) {
+                    stopTimer();
+                    return;
+                }
+                state.remaining -= 1;
+                addSecondToTask();
+                if (state.remaining === 0) {
+                    sessionLabel.textContent = '已完成';
+                }
+            } else {
+                state.elapsed += 1;
+                addSecondToTask();
+            }
+            updateDisplay();
+        }
+
+        function startTimer() {
+            if (state.running) return;
+            state.running = true;
+            startPauseBtn.textContent = '暂停';
+            tick();
+            state.timerId = setInterval(tick, 1000);
+        }
+
+        function toggleStartPause() {
+            if (state.running) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function resetTimer() {
+            stopTimer();
+            state.elapsed = 0;
+            state.remaining = settings[state.mode];
+            updateDisplay();
+            sessionLabel.textContent = state.mode === 'focus' ? '番茄钟' : state.mode === 'short' ? '小憩' : '长休';
+        }
+
+        function handleTabSwitch(nextType) {
+            tabs.forEach(t => t.classList.toggle('active', t.dataset.type === nextType));
+            state.type = nextType;
+            if (nextType === 'pomodoro') {
+                setMode(state.mode);
+                document.getElementById('pomodoroModes').style.display = 'flex';
+                sessionLabel.textContent = state.mode === 'focus' ? '番茄钟' : state.mode === 'short' ? '小憩' : '长休';
+            } else {
+                stopTimer();
+                state.elapsed = 0;
+                display.textContent = '00:00';
+                modeLabel.textContent = '正计时模式：不限时长';
+                document.getElementById('pomodoroModes').style.display = 'none';
+                sessionLabel.textContent = '正计时';
+            }
+        }
+
+        function bindInputs() {
+            Object.entries(lengthInputs).forEach(([key, input]) => {
+                input.addEventListener('change', () => {
+                    const val = Number(input.value);
+                    if (!Number.isFinite(val) || val <= 0) { settings[key] = defaults[key]; return; }
+                    settings[key] = Math.min(val, 360) * 60;
+                    if (state.type === 'pomodoro' && state.mode === key) {
+                        state.remaining = settings[key];
+                        updateDisplay();
+                        modeLabel.textContent = `${val} 分钟${key === 'focus' ? '专注' : '放松'}`;
+                    }
+                });
+            });
+        }
+
+        function initThemes() {
+            themeButtons.forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.theme)));
+            applyTheme('default');
+        }
+
+        function initDate() {
+            const now = new Date();
+            const day = now.toLocaleDateString('zh-Hans', { month: 'long', day: 'numeric', weekday: 'long' });
+            todayEl.textContent = day;
+        }
+
+        function init() {
+            initDate();
+            initThemes();
+            bindInputs();
+            bindFavorites();
+            updateDisplay();
+            tabs.forEach(tab => tab.addEventListener('click', () => handleTabSwitch(tab.dataset.type)));
+            modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+            startPauseBtn.addEventListener('click', toggleStartPause);
+            resetBtn.addEventListener('click', resetTimer);
+            openWeeklyBtn?.addEventListener('click', openWeeklyModal);
+            document.getElementById('closeWeekly')?.addEventListener('click', closeWeeklyModal);
+            weeklyModal?.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-backdrop')) closeWeeklyModal();
+            });
+            openMonthlyBtn?.addEventListener('click', openMonthlyModal);
+            closeMonthlyBtn?.addEventListener('click', closeMonthlyModal);
+            monthlyModal?.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal-backdrop')) closeMonthlyModal();
+            });
+            taskTable.addEventListener('change', (e) => { commitNameChange(e.target); commitTimeChange(e.target); });
+            taskTable.addEventListener('focusout', (e) => { commitNameChange(e.target); commitTimeChange(e.target); });
+            taskTable.addEventListener('keydown', (e) => {
+                if ((e.target.classList.contains('task-name-input') || e.target.classList.contains('task-time-input')) && e.key === 'Enter') {
+                    e.preventDefault();
+                    commitNameChange(e.target);
+                    commitTimeChange(e.target);
+                }
+            });
+            taskTable.addEventListener('click', (e) => {
+                if (e.target.dataset.action === 'delete') {
+                    deleteTask(e.target.dataset.name);
+                }
+            });
+            renderTable();
+        }
+
+        init();
+    </script>
 </body>
-
 </html>
