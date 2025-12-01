@@ -1,1 +1,654 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>简洁记账本</title>
+  <style>
+    :root {
+      --bg: #f2ede9;
+      --card: #ffffff;
+      --ink: #1f1917;
+      --muted: #6b5f57;
+      --accent: #c2a27a;
+      --accent-2: #e4d6c4;
+      --success: #4c8c5b;
+      --danger: #b4584a;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+      font-family: "Inter", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 20%, #f9f4f0, var(--bg));
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 32px;
+      position: sticky;
+      top: 0;
+      background: rgba(242, 237, 233, 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: var(--shadow);
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--ink);
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    main { padding: 24px; max-width: 1200px; margin: 0 auto 60px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .hero-left {
+      position: relative;
+      padding: 24px;
+      border-radius: 28px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-left h1 {
+      font-size: clamp(28px, 5vw, 48px);
+      margin: 0 0 12px;
+      line-height: 1.05;
+    }
+
+    .hero-left p { color: var(--muted); margin: 0 0 18px; }
+
+    .badge-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 12px;
+      background: var(--accent-2);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .hero-right { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+    .card {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .card h3 { margin: 0 0 6px; font-size: 16px; letter-spacing: 0.02em; }
+    .card .big { font-size: 26px; margin: 6px 0; font-weight: 700; }
+    .muted { color: var(--muted); font-size: 14px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin: 26px 0;
+    }
+
+    form {
+      display: grid;
+      gap: 10px;
+    }
+
+    label { font-weight: 700; font-size: 14px; }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: #faf8f6;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    textarea { resize: vertical; min-height: 60px; }
+
+    button {
+      border: none;
+      background: var(--ink);
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.16);
+    }
+
+    button.secondary { background: var(--accent); color: #241b16; }
+    button:active { transform: translateY(1px); box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14); }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 26px 0 12px;
+    }
+
+    .section-title h2 { margin: 0; letter-spacing: 0.03em; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+    .status.up { color: var(--success); font-weight: 700; }
+    .status.down { color: var(--danger); font-weight: 700; }
+
+    .table {
+      width: 100%;
+      border-spacing: 0;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table thead { background: #f7f2ec; text-align: left; }
+    .table th, .table td { padding: 12px 14px; font-size: 14px; }
+    .table tbody tr:nth-child(odd) { background: #faf7f3; }
+
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.05);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .pill strong { font-size: 16px; }
+
+    .flex-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 860px) {
+      header { position: static; }
+      .hero { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo pill">
+      <span>💼</span>
+      <span>MY BOOKKEEPING</span>
+    </div>
+    <nav>
+      <a href="#overview" class="active">概览 Overview</a>
+      <a href="#transactions">流水 Transactions</a>
+      <a href="#reports">报告 Reports</a>
+    </nav>
+    <div class="pill">
+      <span class="muted">资产 | Assets</span>
+      <strong id="total-assets">$0</strong>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="overview">
+      <div class="hero-left">
+        <h1>轻松记录收支<br>让月度与年度状况一目了然</h1>
+        <p>Income / Expense 分开记录，支持分类、备注，提供月度与年度汇总。</p>
+        <div class="badge-group">
+          <div class="badge">✔️ 月度收入输入</div>
+          <div class="badge">✔️ 开销名称、金额、分类、备注</div>
+          <div class="badge">✔️ 月度 & 年度总结</div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="card">
+          <h3>本月收入</h3>
+          <div class="big" id="card-income">$0</div>
+          <div class="muted" id="card-income-count">0 笔</div>
+        </div>
+        <div class="card">
+          <h3>本月开销</h3>
+          <div class="big" id="card-expense">$0</div>
+          <div class="muted" id="card-expense-count">0 笔</div>
+        </div>
+        <div class="card">
+          <h3>当月结余</h3>
+          <div class="big" id="card-balance">$0</div>
+          <div class="muted" id="card-trend">—</div>
+        </div>
+        <div class="card">
+          <h3>年度累计</h3>
+          <div class="big" id="card-annual">$0</div>
+          <div class="muted" id="card-annual-year">—</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="transactions">
+      <div class="section-title">
+        <h2>录入区 · Income & Expense</h2>
+        <div class="flex-row">
+          <label for="month-picker">选择月份</label>
+          <input id="month-picker" type="month" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="card">
+          <h3>收入模块</h3>
+          <p class="muted">输入每月收入或其他入账。</p>
+          <form id="income-form">
+            <div>
+              <label>名称</label>
+              <input name="name" placeholder="如：工资、奖金" required />
+            </div>
+            <div>
+              <label>金额</label>
+              <input name="amount" type="number" step="0.01" min="0" placeholder="5000" required />
+            </div>
+            <div>
+              <label>分类</label>
+              <select name="category">
+                <option>工资</option>
+                <option>兼职</option>
+                <option>投资</option>
+                <option>其他</option>
+              </select>
+            </div>
+            <div>
+              <label>日期</label>
+              <input name="date" type="date" required />
+            </div>
+            <div>
+              <label>备注</label>
+              <textarea name="note" placeholder="可备注月份或细节"></textarea>
+            </div>
+            <button type="submit">添加收入</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3>开销模块</h3>
+          <p class="muted">输入开销名称、金额、分类、备注。</p>
+          <form id="expense-form">
+            <div>
+              <label>名称</label>
+              <input name="name" placeholder="如：房租、餐饮" required />
+            </div>
+            <div>
+              <label>金额</label>
+              <input name="amount" type="number" step="0.01" min="0" placeholder="1200" required />
+            </div>
+            <div>
+              <label>分类</label>
+              <select name="category">
+                <option>房租</option>
+                <option>餐饮</option>
+                <option>交通</option>
+                <option>娱乐</option>
+                <option>购物</option>
+                <option>其他</option>
+              </select>
+            </div>
+            <div>
+              <label>日期</label>
+              <input name="date" type="date" required />
+            </div>
+            <div>
+              <label>备注</label>
+              <textarea name="note" placeholder="可补充细节"></textarea>
+            </div>
+            <button type="submit" class="secondary">添加开销</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section id="reports">
+      <div class="section-title">
+        <h2>月度总结</h2>
+        <div class="chips" id="month-chips"></div>
+      </div>
+      <div class="summary-grid">
+        <div class="card">
+          <h3>本月收入</h3>
+          <div class="big" id="month-income">$0</div>
+          <div class="muted" id="month-income-meta">—</div>
+        </div>
+        <div class="card">
+          <h3>本月开销</h3>
+          <div class="big" id="month-expense">$0</div>
+          <div class="muted" id="month-expense-meta">—</div>
+        </div>
+        <div class="card">
+          <h3>净结余</h3>
+          <div class="big" id="month-balance">$0</div>
+          <div class="muted" id="month-balance-meta">—</div>
+        </div>
+        <div class="card">
+          <h3>收入占比</h3>
+          <div class="big" id="month-ratio">0%</div>
+          <div class="muted">结余 / 收入</div>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h2>月度流水</h2>
+        <div class="chips" id="category-chips"></div>
+      </div>
+      <table class="table" aria-label="月度流水">
+        <thead>
+          <tr><th>日期</th><th>名称</th><th>分类</th><th>类型</th><th>金额</th><th>备注</th></tr>
+        </thead>
+        <tbody id="month-table"></tbody>
+      </table>
+
+      <div class="section-title">
+        <h2>年度总结</h2>
+        <div class="flex-row">
+          <label for="year-picker">年份</label>
+          <input id="year-picker" type="number" min="2000" max="2100" />
+        </div>
+      </div>
+      <div class="summary-grid">
+        <div class="card">
+          <h3>年度收入</h3>
+          <div class="big" id="annual-income">$0</div>
+          <div class="muted" id="annual-income-meta">—</div>
+        </div>
+        <div class="card">
+          <h3>年度开销</h3>
+          <div class="big" id="annual-expense">$0</div>
+          <div class="muted" id="annual-expense-meta">—</div>
+        </div>
+        <div class="card">
+          <h3>年度结余</h3>
+          <div class="big" id="annual-balance">$0</div>
+          <div class="muted" id="annual-balance-meta">—</div>
+        </div>
+        <div class="card">
+          <h3>月均结余</h3>
+          <div class="big" id="annual-average">$0</div>
+          <div class="muted">12 个月均值</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const storageKey = 'bookkeepingEntries';
+    let entries = [];
+
+    const monthPicker = document.getElementById('month-picker');
+    const yearPicker = document.getElementById('year-picker');
+    const monthTable = document.getElementById('month-table');
+
+    function loadEntries() {
+      try {
+        const saved = localStorage.getItem(storageKey);
+        entries = saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        entries = [];
+      }
+    }
+
+    function saveEntries() { localStorage.setItem(storageKey, JSON.stringify(entries)); }
+
+    function formatCurrency(num) {
+      const value = Number(num) || 0;
+      return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+    }
+
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+
+    function monthKey(dateStr) {
+      const d = new Date(dateStr);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      return `${y}-${m}`;
+    }
+
+    function getYear(dateStr) { return new Date(dateStr).getFullYear(); }
+
+    function collectByMonth(targetMonth) {
+      return entries.filter(e => monthKey(e.date) === targetMonth);
+    }
+
+    function collectByYear(targetYear) {
+      return entries.filter(e => getYear(e.date) === Number(targetYear));
+    }
+
+    function updateMonthChips(month, items) {
+      const wrap = document.getElementById('month-chips');
+      wrap.innerHTML = '';
+      const total = items.reduce((s, e) => s + Number(e.amount || 0), 0);
+      const income = items.filter(e => e.type === 'income').reduce((s, e) => s + Number(e.amount || 0), 0);
+      const expense = total - income;
+      const chipData = [
+        { label: '合计', value: formatCurrency(total) },
+        { label: '收入', value: formatCurrency(income) },
+        { label: '开销', value: formatCurrency(expense) },
+        { label: '笔数', value: `${items.length} 笔` },
+        { label: '月份', value: month || '—' }
+      ];
+      chipData.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'chip';
+        div.textContent = `${c.label}: ${c.value}`;
+        wrap.appendChild(div);
+      });
+    }
+
+    function updateCategoryChips(items) {
+      const wrap = document.getElementById('category-chips');
+      wrap.innerHTML = '';
+      const groups = items.reduce((map, e) => {
+        const key = `${e.type}-${e.category}`;
+        map[key] = (map[key] || 0) + Number(e.amount || 0);
+        return map;
+      }, {});
+      Object.entries(groups).forEach(([key, amount]) => {
+        const [type, category] = key.split('-');
+        const div = document.createElement('div');
+        div.className = 'chip';
+        div.textContent = `${type === 'income' ? '收入' : '开销'}-${category}: ${formatCurrency(amount)}`;
+        wrap.appendChild(div);
+      });
+      if (!Object.keys(groups).length) {
+        const div = document.createElement('div');
+        div.className = 'chip';
+        div.textContent = '暂无分类数据';
+        wrap.appendChild(div);
+      }
+    }
+
+    function renderMonthSummary() {
+      const month = monthPicker.value || monthKey(todayISO());
+      monthPicker.value = month;
+      const monthly = collectByMonth(month);
+
+      const incomeTotal = monthly.filter(e => e.type === 'income').reduce((s, e) => s + Number(e.amount || 0), 0);
+      const expenseTotal = monthly.filter(e => e.type === 'expense').reduce((s, e) => s + Number(e.amount || 0), 0);
+      const balance = incomeTotal - expenseTotal;
+      const ratio = incomeTotal ? Math.round((balance / incomeTotal) * 100) : 0;
+
+      document.getElementById('month-income').textContent = formatCurrency(incomeTotal);
+      document.getElementById('month-expense').textContent = formatCurrency(expenseTotal);
+      document.getElementById('month-balance').textContent = formatCurrency(balance);
+      document.getElementById('month-ratio').textContent = `${ratio}%`;
+      document.getElementById('month-income-meta').textContent = `${monthly.filter(e => e.type === 'income').length} 笔收入`;
+      document.getElementById('month-expense-meta').textContent = `${monthly.filter(e => e.type === 'expense').length} 笔开销`;
+      document.getElementById('month-balance-meta').textContent = balance >= 0 ? '收支正向' : '收支倒挂';
+
+      updateMonthChips(month, monthly);
+      updateCategoryChips(monthly);
+      renderMonthTable(monthly);
+      renderHeroCards(month, incomeTotal, expenseTotal, balance);
+      renderAnnualSummary();
+    }
+
+    function renderMonthTable(list) {
+      monthTable.innerHTML = '';
+      if (!list.length) {
+        const row = document.createElement('tr');
+        const cell = document.createElement('td');
+        cell.colSpan = 6;
+        cell.textContent = '本月暂无记录';
+        row.appendChild(cell);
+        monthTable.appendChild(row);
+        return;
+      }
+      list
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .forEach(e => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${e.date}</td>
+            <td>${e.name}</td>
+            <td>${e.category}</td>
+            <td>${e.type === 'income' ? '收入' : '开销'}</td>
+            <td class="${e.type === 'income' ? 'status up' : 'status down'}">${formatCurrency(e.amount)}</td>
+            <td>${e.note || '—'}</td>
+          `;
+          monthTable.appendChild(tr);
+        });
+    }
+
+    function renderHeroCards(month, income, expense, balance) {
+      document.getElementById('card-income').textContent = formatCurrency(income);
+      document.getElementById('card-expense').textContent = formatCurrency(expense);
+      document.getElementById('card-balance').textContent = formatCurrency(balance);
+      document.getElementById('card-income-count').textContent = `${collectByMonth(month).filter(e => e.type === 'income').length} 笔`;
+      document.getElementById('card-expense-count').textContent = `${collectByMonth(month).filter(e => e.type === 'expense').length} 笔`;
+      document.getElementById('card-trend').textContent = balance >= 0 ? '✅ 收大于支' : '⚠️ 开销偏高';
+    }
+
+    function renderAnnualSummary() {
+      const year = yearPicker.value || new Date().getFullYear();
+      yearPicker.value = year;
+      const yearly = collectByYear(year);
+      const income = yearly.filter(e => e.type === 'income').reduce((s, e) => s + Number(e.amount || 0), 0);
+      const expense = yearly.filter(e => e.type === 'expense').reduce((s, e) => s + Number(e.amount || 0), 0);
+      const balance = income - expense;
+      const avg = balance / 12;
+
+      document.getElementById('annual-income').textContent = formatCurrency(income);
+      document.getElementById('annual-expense').textContent = formatCurrency(expense);
+      document.getElementById('annual-balance').textContent = formatCurrency(balance);
+      document.getElementById('annual-average').textContent = formatCurrency(avg);
+      document.getElementById('annual-income-meta').textContent = `${yearly.filter(e => e.type === 'income').length} 笔`;
+      document.getElementById('annual-expense-meta').textContent = `${yearly.filter(e => e.type === 'expense').length} 笔`;
+      document.getElementById('annual-balance-meta').textContent = balance >= 0 ? '年度盈余' : '年度亏损';
+
+      const totalAssets = entries.reduce((s, e) => s + (e.type === 'income' ? Number(e.amount || 0) : -Number(e.amount || 0)), 0);
+      document.getElementById('total-assets').textContent = formatCurrency(totalAssets);
+      document.getElementById('card-annual').textContent = formatCurrency(balance);
+      document.getElementById('card-annual-year').textContent = `${year} 累计`;
+    }
+
+    function addEntry(type, form) {
+      const formData = new FormData(form);
+      const entry = {
+        id: crypto.randomUUID(),
+        type,
+        name: formData.get('name').trim(),
+        amount: parseFloat(formData.get('amount')) || 0,
+        category: formData.get('category'),
+        date: formData.get('date'),
+        note: formData.get('note').trim(),
+      };
+      entries.push(entry);
+      saveEntries();
+      form.reset();
+      form.querySelector('input[type="date"]').value = todayISO();
+      renderMonthSummary();
+    }
+
+    function initForms() {
+      const incomeForm = document.getElementById('income-form');
+      const expenseForm = document.getElementById('expense-form');
+      incomeForm.addEventListener('submit', e => {
+        e.preventDefault();
+        addEntry('income', incomeForm);
+      });
+      expenseForm.addEventListener('submit', e => {
+        e.preventDefault();
+        addEntry('expense', expenseForm);
+      });
+
+      [incomeForm, expenseForm].forEach(form => {
+        form.querySelector('input[type="date"]').value = todayISO();
+      });
+    }
+
+    function initPickers() {
+      const nowMonth = monthKey(todayISO());
+      monthPicker.value = nowMonth;
+      yearPicker.value = new Date().getFullYear();
+      monthPicker.addEventListener('change', renderMonthSummary);
+      yearPicker.addEventListener('change', renderAnnualSummary);
+    }
+
+    function boot() {
+      loadEntries();
+      initForms();
+      initPickers();
+      renderMonthSummary();
+    }
+
+    document.addEventListener('DOMContentLoaded', boot);
+  </script>
+</body>
+</html>
