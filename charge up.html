@@ -218,11 +218,15 @@
       flex-wrap: wrap;
     }
 
+    .chart-card { margin: 16px 0; }
+    .chart-container { height: 320px; }
+
     @media (max-width: 860px) {
       header { position: static; }
       .hero { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 </head>
 <body>
   <header>
@@ -237,7 +241,7 @@
     </nav>
     <div class="pill">
       <span class="muted">资产 | Assets</span>
-      <strong id="total-assets">$0</strong>
+      <strong id="total-assets">￥0</strong>
     </div>
   </header>
 
@@ -255,22 +259,22 @@
       <div class="hero-right">
         <div class="card">
           <h3>本月收入</h3>
-          <div class="big" id="card-income">$0</div>
+          <div class="big" id="card-income">￥0</div>
           <div class="muted" id="card-income-count">0 笔</div>
         </div>
         <div class="card">
           <h3>本月开销</h3>
-          <div class="big" id="card-expense">$0</div>
+          <div class="big" id="card-expense">￥0</div>
           <div class="muted" id="card-expense-count">0 笔</div>
         </div>
         <div class="card">
           <h3>当月结余</h3>
-          <div class="big" id="card-balance">$0</div>
+          <div class="big" id="card-balance">￥0</div>
           <div class="muted" id="card-trend">—</div>
         </div>
         <div class="card">
           <h3>年度累计</h3>
-          <div class="big" id="card-annual">$0</div>
+          <div class="big" id="card-annual">￥0</div>
           <div class="muted" id="card-annual-year">—</div>
         </div>
       </div>
@@ -364,17 +368,17 @@
       <div class="summary-grid">
         <div class="card">
           <h3>本月收入</h3>
-          <div class="big" id="month-income">$0</div>
+          <div class="big" id="month-income">￥0</div>
           <div class="muted" id="month-income-meta">—</div>
         </div>
         <div class="card">
           <h3>本月开销</h3>
-          <div class="big" id="month-expense">$0</div>
+          <div class="big" id="month-expense">￥0</div>
           <div class="muted" id="month-expense-meta">—</div>
         </div>
         <div class="card">
           <h3>净结余</h3>
-          <div class="big" id="month-balance">$0</div>
+          <div class="big" id="month-balance">￥0</div>
           <div class="muted" id="month-balance-meta">—</div>
         </div>
         <div class="card">
@@ -382,6 +386,11 @@
           <div class="big" id="month-ratio">0%</div>
           <div class="muted">结余 / 收入</div>
         </div>
+      </div>
+
+      <div class="card chart-card">
+        <h3>本月支出分类 · 周度柱状图</h3>
+        <div id="month-chart" class="chart-container"></div>
       </div>
 
       <div class="section-title">
@@ -405,24 +414,29 @@
       <div class="summary-grid">
         <div class="card">
           <h3>年度收入</h3>
-          <div class="big" id="annual-income">$0</div>
+          <div class="big" id="annual-income">￥0</div>
           <div class="muted" id="annual-income-meta">—</div>
         </div>
         <div class="card">
           <h3>年度开销</h3>
-          <div class="big" id="annual-expense">$0</div>
+          <div class="big" id="annual-expense">￥0</div>
           <div class="muted" id="annual-expense-meta">—</div>
         </div>
         <div class="card">
           <h3>年度结余</h3>
-          <div class="big" id="annual-balance">$0</div>
+          <div class="big" id="annual-balance">￥0</div>
           <div class="muted" id="annual-balance-meta">—</div>
         </div>
         <div class="card">
           <h3>月均结余</h3>
-          <div class="big" id="annual-average">$0</div>
+          <div class="big" id="annual-average">￥0</div>
           <div class="muted">12 个月均值</div>
         </div>
+      </div>
+
+      <div class="card chart-card">
+        <h3>年度支出分类 · 月度柱状图</h3>
+        <div id="annual-chart" class="chart-container"></div>
       </div>
     </section>
   </main>
@@ -430,6 +444,9 @@
   <script>
     const storageKey = 'bookkeepingEntries';
     let entries = [];
+
+    let monthChart;
+    let annualChart;
 
     const monthPicker = document.getElementById('month-picker');
     const yearPicker = document.getElementById('year-picker');
@@ -448,7 +465,7 @@
 
     function formatCurrency(num) {
       const value = Number(num) || 0;
-      return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+      return value.toLocaleString('zh-CN', { style: 'currency', currency: 'CNY', minimumFractionDigits: 2 });
     }
 
     function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -468,6 +485,71 @@
 
     function collectByYear(targetYear) {
       return entries.filter(e => getYear(e.date) === Number(targetYear));
+    }
+
+    function ensureMonthChart() {
+      if (!monthChart) {
+        monthChart = echarts.init(document.getElementById('month-chart'));
+      }
+      return monthChart;
+    }
+
+    function ensureAnnualChart() {
+      if (!annualChart) {
+        annualChart = echarts.init(document.getElementById('annual-chart'));
+      }
+      return annualChart;
+    }
+
+    function buildStackedSeries(categories, xLabels, dataByCategory, stackName) {
+      const series = categories.map(cat => ({
+        name: cat,
+        type: 'bar',
+        stack: stackName,
+        emphasis: { focus: 'series' },
+        data: xLabels.map(label => dataByCategory[cat]?.[label] || 0),
+      }));
+
+      const stackInfo = {};
+      for (let i = 0; i < xLabels.length; ++i) {
+        for (let j = 0; j < series.length; ++j) {
+          const stackNameKey = series[j].stack;
+          if (!stackNameKey) continue;
+          if (!stackInfo[stackNameKey]) {
+            stackInfo[stackNameKey] = { stackStart: [], stackEnd: [] };
+          }
+          const info = stackInfo[stackNameKey];
+          const data = series[j].data[i];
+          if (data && data !== '-') {
+            if (info.stackStart[i] == null) {
+              info.stackStart[i] = j;
+            }
+            info.stackEnd[i] = j;
+          }
+        }
+      }
+
+      series.forEach((s, si) => {
+        const info = stackInfo[s.stack] || { stackEnd: [] };
+        s.data = s.data.map((v, di) => {
+          const isEnd = info.stackEnd[di] === si;
+          const topBorder = isEnd ? 12 : 0;
+          return {
+            value: v,
+            itemStyle: {
+              borderRadius: [topBorder, topBorder, 0, 0],
+            },
+          };
+        });
+      });
+
+      return series;
+    }
+
+    function getWeekLabel(dateStr) {
+      const day = new Date(dateStr).getDate();
+      const week = Math.ceil(day / 7);
+      return `第${week}周`;
     }
 
     function updateMonthChips(month, items) {
@@ -514,6 +596,84 @@
       }
     }
 
+    function updateMonthChart(monthly) {
+      const chart = ensureMonthChart();
+      const expenses = monthly.filter(e => e.type === 'expense');
+
+      if (!expenses.length) {
+        chart.clear();
+        chart.setOption({
+          title: {
+            text: '本月暂无支出数据',
+            left: 'center',
+            top: 'middle',
+            textStyle: { color: '#6b5f57', fontSize: 14 },
+          },
+        });
+        return;
+      }
+
+      const weeks = Array.from(new Set(expenses.map(e => getWeekLabel(e.date)))).sort((a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, '')));
+      const categories = Array.from(new Set(expenses.map(e => e.category)));
+      const dataByCategory = {};
+
+      expenses.forEach(e => {
+        const week = getWeekLabel(e.date);
+        dataByCategory[e.category] = dataByCategory[e.category] || {};
+        dataByCategory[e.category][week] = (dataByCategory[e.category][week] || 0) + Number(e.amount || 0);
+      });
+
+      const series = buildStackedSeries(categories, weeks, dataByCategory, 'week-expense');
+
+      chart.setOption({
+        tooltip: { trigger: 'axis' },
+        legend: { top: 0 },
+        grid: { left: 40, right: 20, bottom: 20, top: 40 },
+        xAxis: { type: 'category', data: weeks },
+        yAxis: { type: 'value', axisLabel: { formatter: '￥{value}' } },
+        series,
+      });
+    }
+
+    function updateAnnualChart(yearly, year) {
+      const chart = ensureAnnualChart();
+      const expenses = yearly.filter(e => e.type === 'expense');
+
+      if (!expenses.length) {
+        chart.clear();
+        chart.setOption({
+          title: {
+            text: `${year} 年暂无支出数据`,
+            left: 'center',
+            top: 'middle',
+            textStyle: { color: '#6b5f57', fontSize: 14 },
+          },
+        });
+        return;
+      }
+
+      const months = Array.from({ length: 12 }, (_, i) => `${i + 1}月`);
+      const categories = Array.from(new Set(expenses.map(e => e.category)));
+      const dataByCategory = {};
+
+      expenses.forEach(e => {
+        const monthLabel = `${new Date(e.date).getMonth() + 1}月`;
+        dataByCategory[e.category] = dataByCategory[e.category] || {};
+        dataByCategory[e.category][monthLabel] = (dataByCategory[e.category][monthLabel] || 0) + Number(e.amount || 0);
+      });
+
+      const series = buildStackedSeries(categories, months, dataByCategory, 'month-expense');
+
+      chart.setOption({
+        tooltip: { trigger: 'axis' },
+        legend: { top: 0 },
+        grid: { left: 40, right: 20, bottom: 20, top: 40 },
+        xAxis: { type: 'category', data: months },
+        yAxis: { type: 'value', axisLabel: { formatter: '￥{value}' } },
+        series,
+      });
+    }
+
     function renderMonthSummary() {
       const month = monthPicker.value || monthKey(todayISO());
       monthPicker.value = month;
@@ -536,6 +696,7 @@
       updateCategoryChips(monthly);
       renderMonthTable(monthly);
       renderHeroCards(month, incomeTotal, expenseTotal, balance);
+      updateMonthChart(monthly);
       renderAnnualSummary();
     }
 
@@ -596,6 +757,8 @@
       document.getElementById('total-assets').textContent = formatCurrency(totalAssets);
       document.getElementById('card-annual').textContent = formatCurrency(balance);
       document.getElementById('card-annual-year').textContent = `${year} 累计`;
+
+      updateAnnualChart(yearly, year);
     }
 
     function addEntry(type, form) {
@@ -647,6 +810,11 @@
       initPickers();
       renderMonthSummary();
     }
+
+    window.addEventListener('resize', () => {
+      if (monthChart) monthChart.resize();
+      if (annualChart) annualChart.resize();
+    });
 
     document.addEventListener('DOMContentLoaded', boot);
   </script>
