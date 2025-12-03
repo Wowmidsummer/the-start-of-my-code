@@ -198,6 +198,25 @@
 
     .table thead { background: #f7f2ec; text-align: left; }
     .table th, .table td { padding: 12px 14px; font-size: 14px; }
+    .editable-cell { position: relative; }
+    .editable-cell .edit-btn {
+      display: none;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent-2);
+      color: var(--ink);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .editable-cell:hover .edit-btn { display: inline-flex; }
+    .editable-cell.editing .edit-btn { display: none; }
+    .edit-panel { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .edit-panel input, .edit-panel select { max-width: 180px; }
     .table tbody tr:nth-child(odd) { background: #faf7f3; }
 
     .chips { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -487,6 +506,115 @@
       return entries.filter(e => getYear(e.date) === Number(targetYear));
     }
 
+    function getCategoryOptions(entryType) {
+      const opts = new Set();
+      document.querySelectorAll('select[name="category"] option').forEach(o => opts.add(o.textContent.trim()));
+      entries
+        .filter(e => !entryType || e.type === entryType)
+        .forEach(e => opts.add(e.category));
+      return Array.from(opts).filter(Boolean);
+    }
+
+    function createEditableCell(entry, field) {
+      const td = document.createElement('td');
+      td.className = 'editable-cell';
+
+      const text = document.createElement('span');
+      text.className = 'cell-text';
+      text.textContent = entry[field] || '—';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'edit-btn';
+      btn.textContent = '修改';
+      btn.addEventListener('click', () => startInlineEdit(td, entry.id, field));
+
+      td.appendChild(text);
+      td.appendChild(btn);
+      return td;
+    }
+
+    function startInlineEdit(td, entryId, field) {
+      if (td.classList.contains('editing')) return;
+      const entry = entries.find(e => e.id === entryId);
+      if (!entry) return;
+
+      td.classList.add('editing');
+      td.innerHTML = '';
+
+      const panel = document.createElement('div');
+      panel.className = 'edit-panel';
+
+      let inputEl;
+
+      if (field === 'category') {
+        const select = document.createElement('select');
+        const options = getCategoryOptions(entry.type);
+        if (!options.includes(entry.category)) options.unshift(entry.category);
+        options.forEach(opt => {
+          const optionEl = document.createElement('option');
+          optionEl.value = opt;
+          optionEl.textContent = opt;
+          select.appendChild(optionEl);
+        });
+
+        const customOption = document.createElement('option');
+        customOption.value = '__custom__';
+        customOption.textContent = '自定义…';
+        select.appendChild(customOption);
+
+        select.value = entry.category;
+
+        const customInput = document.createElement('input');
+        customInput.placeholder = '输入新的分类';
+        customInput.style.display = 'none';
+
+        select.addEventListener('change', () => {
+          customInput.style.display = select.value === '__custom__' ? 'block' : 'none';
+        });
+
+        inputEl = { select, customInput };
+        panel.appendChild(select);
+        panel.appendChild(customInput);
+      } else {
+        const input = document.createElement('input');
+        input.value = entry[field] || '';
+        input.placeholder = '请输入内容';
+        inputEl = input;
+        panel.appendChild(input);
+      }
+
+      const saveBtn = document.createElement('button');
+      saveBtn.type = 'button';
+      saveBtn.textContent = '保存';
+      saveBtn.addEventListener('click', () => {
+        let nextValue;
+        if (field === 'category') {
+          const { select, customInput } = inputEl;
+          nextValue = select.value === '__custom__' ? customInput.value.trim() : select.value;
+        } else {
+          nextValue = inputEl.value.trim();
+        }
+        if (!nextValue) {
+          alert('请输入有效内容');
+          return;
+        }
+        entry[field] = nextValue;
+        saveEntries();
+        renderMonthSummary();
+      });
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.type = 'button';
+      cancelBtn.className = 'secondary';
+      cancelBtn.textContent = '取消';
+      cancelBtn.addEventListener('click', renderMonthSummary);
+
+      panel.appendChild(saveBtn);
+      panel.appendChild(cancelBtn);
+      td.appendChild(panel);
+    }
+
     function ensureMonthChart() {
       if (!monthChart) {
         monthChart = echarts.init(document.getElementById('month-chart'));
@@ -715,14 +843,23 @@
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .forEach(e => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${e.date}</td>
-            <td>${e.name}</td>
-            <td>${e.category}</td>
-            <td>${e.type === 'income' ? '收入' : '开销'}</td>
-            <td class="${e.type === 'income' ? 'status up' : 'status down'}">${formatCurrency(e.amount)}</td>
-            <td>${e.note || '—'}</td>
-          `;
+          const dateTd = document.createElement('td');
+          dateTd.textContent = e.date;
+
+          const nameTd = createEditableCell(e, 'name');
+          const categoryTd = createEditableCell(e, 'category');
+
+          const typeTd = document.createElement('td');
+          typeTd.textContent = e.type === 'income' ? '收入' : '开销';
+
+          const amountTd = document.createElement('td');
+          amountTd.className = e.type === 'income' ? 'status up' : 'status down';
+          amountTd.textContent = formatCurrency(e.amount);
+
+          const noteTd = document.createElement('td');
+          noteTd.textContent = e.note || '—';
+
+          [dateTd, nameTd, categoryTd, typeTd, amountTd, noteTd].forEach(td => tr.appendChild(td));
           monthTable.appendChild(tr);
         });
     }
