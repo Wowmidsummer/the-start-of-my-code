@@ -6,14 +6,17 @@
   <title>画画记录网站 | Brush & Pixel</title>
   <style>
     :root {
-      --bg: #f7f8fb;
-      --card: #ffffff;
-      --text: #1f2933;
-      --muted: #6b7280;
-      --accent: #6b5bff;
-      --accent-2: #ff8a5c;
-      --border: #e5e7eb;
-      --shadow: 0 10px 30px rgba(31, 41, 51, 0.12);
+      --bg: #0e2236;
+      --bg-2: #1a3a4f;
+      --card: #f7f1e5;
+      --card-2: #fdfaf3;
+      --text: #0f1b2b;
+      --muted: #4c5d70;
+      --muted-light: #d7e3ef;
+      --accent: #d1a85c;
+      --accent-2: #e36d60;
+      --border: #d7c7a5;
+      --shadow: 0 12px 40px rgba(5, 16, 30, 0.35);
       --radius: 18px;
       --gap: 20px;
     }
@@ -24,12 +27,10 @@
 
     body {
       margin: 0;
-      background: radial-gradient(circle at 20% 20%, #f0f4ff, #f7f8fb 45%),
-        radial-gradient(circle at 80% 10%, #fff2ec, transparent 35%),
-        var(--bg);
+      background: linear-gradient(160deg, var(--bg) 25%, #0b1a2a 65%, #07111f 100%);
       font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont,
         'Segoe UI', sans-serif;
-      color: var(--text);
+      color: var(--muted-light);
       min-height: 100vh;
     }
 
@@ -38,6 +39,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 28px 6vw 10px;
+      color: #f6e9c9;
     }
 
     .brand {
@@ -52,10 +54,10 @@
       width: 44px;
       height: 44px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #6b5bff, #8ec5fc);
+      background: linear-gradient(135deg, #d1a85c, #e1c68d);
       display: grid;
       place-items: center;
-      color: white;
+      color: #0f1b2b;
       font-size: 22px;
       font-weight: 800;
       box-shadow: var(--shadow);
@@ -69,7 +71,7 @@
 
     nav a {
       text-decoration: none;
-      color: var(--muted);
+      color: var(--muted-light);
       padding: 10px 14px;
       border-radius: 12px;
       transition: all 0.2s ease;
@@ -78,8 +80,8 @@
 
     nav a:hover,
     nav a:focus {
-      color: var(--text);
-      background: rgba(107, 91, 255, 0.08);
+      color: #0f1b2b;
+      background: rgba(209, 168, 92, 0.18);
     }
 
     .main-grid {
@@ -90,11 +92,11 @@
     }
 
     .section {
-      background: var(--card);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
       border-radius: var(--radius);
       padding: 22px 22px 18px;
       box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .section h2 {
@@ -103,11 +105,12 @@
       align-items: center;
       gap: 10px;
       font-size: 20px;
+      color: #f6e9c9;
     }
 
     .pill {
-      background: rgba(107, 91, 255, 0.08);
-      color: #4b3de2;
+      background: rgba(209, 168, 92, 0.15);
+      color: #f6e9c9;
       padding: 6px 12px;
       border-radius: 999px;
       font-size: 12px;
@@ -119,7 +122,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      color: var(--muted);
+      color: var(--muted-light);
       font-size: 14px;
       margin-bottom: 14px;
       flex-wrap: wrap;
@@ -127,16 +130,16 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: var(--gap);
     }
 
     .card {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), #fff);
+      background: linear-gradient(160deg, rgba(247, 241, 229, 0.92), rgba(253, 250, 243, 0.9));
       border-radius: 16px;
       padding: 16px;
-      border: 1px solid var(--border);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(14, 34, 54, 0.08);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -148,7 +151,7 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(140deg, rgba(107, 91, 255, 0.08), rgba(255, 255, 255, 0.2));
+      background: linear-gradient(140deg, rgba(209, 168, 92, 0.25), rgba(255, 255, 255, 0.2));
       opacity: 0;
       transition: opacity 0.2s ease;
       pointer-events: none;
@@ -161,6 +164,7 @@
     .card h3 {
       margin: 0;
       font-size: 16px;
+      color: var(--text);
     }
 
     .deadline {
@@ -173,12 +177,13 @@
       align-items: center;
       gap: 6px;
       font-weight: 700;
+      color: var(--text);
     }
 
     .progress {
       width: 100%;
       height: 8px;
-      background: #eef1f7;
+      background: #e9dcc5;
       border-radius: 999px;
       overflow: hidden;
     }
@@ -187,7 +192,7 @@
       display: block;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, #6b5bff, #8ec5fc);
+      background: linear-gradient(90deg, #d1a85c, #e1c68d);
     }
 
     .tags {
@@ -197,8 +202,8 @@
     }
 
     .tag {
-      background: rgba(255, 138, 92, 0.12);
-      color: #ed7134;
+      background: rgba(227, 109, 96, 0.15);
+      color: #b75246;
       padding: 6px 10px;
       border-radius: 10px;
       font-size: 12px;
@@ -217,6 +222,7 @@
       position: relative;
       aspect-ratio: 4 / 3;
       background: #e5e7eb;
+      border: 1px solid rgba(14, 34, 54, 0.08);
     }
 
     .thumb img {
@@ -241,13 +247,13 @@
     .form label {
       font-weight: 700;
       font-size: 13px;
-      color: var(--muted);
+      color: var(--muted-light);
     }
 
     .input, textarea, select {
       width: 100%;
       border-radius: 12px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(209, 168, 92, 0.5);
       padding: 10px 12px;
       font-size: 14px;
       background: #fff;
@@ -258,12 +264,12 @@
     .input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(107, 91, 255, 0.18);
+      box-shadow: 0 0 0 3px rgba(209, 168, 92, 0.28);
     }
 
     .btn {
-      background: linear-gradient(135deg, #6b5bff, #8ec5fc);
-      color: #fff;
+      background: linear-gradient(135deg, #d1a85c, #e1c68d);
+      color: #0f1b2b;
       border: none;
       padding: 10px 12px;
       border-radius: 12px;
@@ -275,7 +281,7 @@
 
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(107, 91, 255, 0.25);
+      box-shadow: 0 12px 24px rgba(209, 168, 92, 0.35);
     }
 
     .stack {
@@ -284,7 +290,7 @@
     }
 
     .subtle {
-      color: var(--muted);
+      color: var(--muted-light);
       font-size: 12px;
     }
 
@@ -304,6 +310,80 @@
       padding: 14px;
       display: grid;
       gap: 8px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ghost-btn {
+      background: rgba(14, 34, 54, 0.05);
+      border: 1px solid rgba(14, 34, 54, 0.1);
+      color: #0f1b2b;
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .ghost-btn:hover {
+      background: rgba(209, 168, 92, 0.18);
+      color: #0f1b2b;
+    }
+
+    .edit-panel {
+      background: rgba(247, 241, 229, 0.85);
+      border: 1px dashed rgba(14, 34, 54, 0.15);
+      border-radius: 12px;
+      padding: 12px;
+      display: none;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .edit-panel.active {
+      display: grid;
+    }
+
+    .thumb-action {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0, 0, 0, 0.55);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .inline {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .mindmap {
+      background: rgba(14, 34, 54, 0.04);
+      border: 1px dashed rgba(14, 34, 54, 0.1);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .mindmap ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text);
+    }
+
+    .muted-label {
+      font-size: 12px;
+      color: var(--muted);
     }
 
     @media (max-width: 980px) {
@@ -338,7 +418,35 @@
       <div class="meta-line">
         <label for="month-select">当前月份</label>
         <select id="month-select" class="input" aria-label="选择月份"></select>
+        <form id="month-add-form" class="inline" autocomplete="off">
+          <label class="muted-label" for="month-input">添加月份</label>
+          <input id="month-input" class="input" type="month" required />
+          <button class="btn" type="submit">添加</button>
+        </form>
       </div>
+      <form id="manuscript-form" class="form" autocomplete="off" style="margin-bottom:12px;">
+        <div class="stack">
+          <label for="manuscript-title">稿件名称</label>
+          <input id="manuscript-title" class="input" placeholder="例如：冬季主题封面" required />
+        </div>
+        <div class="stack">
+          <label for="manuscript-deadline">Dead line（默认月底）</label>
+          <input id="manuscript-deadline" class="input" type="date" />
+        </div>
+        <div class="stack">
+          <label for="manuscript-stage">实时阶段（0-100）</label>
+          <input id="manuscript-stage" class="input" type="number" min="0" max="100" value="30" />
+        </div>
+        <div class="stack">
+          <label for="manuscript-note">灵感记录 / 备注</label>
+          <textarea id="manuscript-note" rows="2" placeholder="记录本稿件的灵感、难点或关键词"></textarea>
+        </div>
+        <div class="stack">
+          <label for="manuscript-ref">参考图 URL（可选，多张可分次添加）</label>
+          <input id="manuscript-ref" class="input" placeholder="https://..." />
+        </div>
+        <button class="btn" type="submit">添加稿件</button>
+      </form>
       <div id="manuscript-cards" class="cards-grid"></div>
     </section>
 
@@ -380,6 +488,10 @@
         <textarea id="inspiration-text" rows="3" required placeholder="记录灵感来源、色彩方案、情绪关键词"></textarea>
       </div>
       <div class="stack">
+        <label for="inspiration-map">思维导图（每行一个节点，可留空）</label>
+        <textarea id="inspiration-map" rows="3" placeholder="主题\n色彩/构图\n情绪/素材"></textarea>
+      </div>
+      <div class="stack">
         <label for="inspiration-image">图片 URL（可选）</label>
         <input id="inspiration-image" class="input" placeholder="https://..." />
       </div>
@@ -389,9 +501,7 @@
 
   <script>
     // 初始数据
-    const months = [
-      '2024-11', '2024-12', '2025-01', '2025-02'
-    ];
+    const months = ['2024-11', '2024-12', '2025-01', '2025-02'];
 
     const manuscriptData = {
       '2024-12': [
@@ -439,17 +549,20 @@
       {
         title: '雨夜港口',
         text: '灯光反射，地面有少许积水，氛围安静。',
-        image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80'
+        image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80',
+        mindmap: ['灯光反射', '积水倒影', '静谧节奏']
       },
       {
         title: '玻璃温室',
         text: '逆光＋薄雾，叶片高光与冷色窗框对比。',
-        image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80'
+        image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
+        mindmap: ['逆光', '薄雾', '冷暖叶片对比']
       },
       {
         title: '布料褶皱研究',
         text: '多做快速草图，记录不同布料的折射感。',
-        image: ''
+        image: '',
+        mindmap: ['丝绸高光', '棉布阴影', '折痕排布']
       }
     ];
 
@@ -458,19 +571,147 @@
     const recordContainer = document.getElementById('record-cards');
     const inspirationContainer = document.getElementById('inspiration-cards');
 
+    const monthInput = document.getElementById('month-input');
+    const monthAddForm = document.getElementById('month-add-form');
+    const manuscriptForm = document.getElementById('manuscript-form');
+
     function formatMonthLabel(value) {
       const [y, m] = value.split('-');
       return `${y}年${m}月`;
     }
 
-    function renderMonthOptions() {
+    function getMonthEnd(month) {
+      const [y, m] = month.split('-');
+      const endDay = new Date(Number(y), Number(m), 0).getDate();
+      return `${y}-${m}-${String(endDay).padStart(2, '0')}`;
+    }
+
+    function ensureMonth(month) {
+      if (!months.includes(month)) {
+        months.push(month);
+      }
+      months.sort((a, b) => a.localeCompare(b));
+      if (!manuscriptData[month]) manuscriptData[month] = [];
+    }
+
+    function renderMonthOptions(selectedValue) {
+      monthSelect.innerHTML = '';
       months.forEach((m) => {
         const opt = document.createElement('option');
         opt.value = m;
         opt.textContent = formatMonthLabel(m);
         monthSelect.appendChild(opt);
       });
-      monthSelect.value = months[1];
+      monthSelect.value = selectedValue || monthSelect.value || months[months.length - 1];
+    }
+
+    function renderReferenceGallery(item, month, itemIndex) {
+      const gallery = document.createElement('div');
+      gallery.className = 'gallery';
+      if (!item.reference.length) {
+        const empty = document.createElement('p');
+        empty.className = 'note';
+        empty.textContent = '暂无参考图，添加一张吧。';
+        gallery.appendChild(empty);
+        return gallery;
+      }
+      item.reference.forEach((src, refIndex) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        thumb.innerHTML = `<img src="${src}" alt="参考图" />`;
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'thumb-action';
+        removeBtn.textContent = '删除';
+        removeBtn.addEventListener('click', () => {
+          manuscriptData[month][itemIndex].reference.splice(refIndex, 1);
+          renderManuscripts(month);
+        });
+        thumb.appendChild(removeBtn);
+        gallery.appendChild(thumb);
+      });
+      return gallery;
+    }
+
+    function buildManuscriptCard(item, index, month) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const stack = document.createElement('div');
+      stack.className = 'stack';
+      stack.innerHTML = `<h3>${item.title}</h3><div class="deadline">Dead line · ${item.deadline}</div>`;
+      card.appendChild(stack);
+
+      const stage = document.createElement('div');
+      stage.className = 'stage';
+      stage.innerHTML = `
+        <span>实时阶段</span>
+        <div class="progress"><span style="width:${item.stage}%"></span></div>
+        <span>${item.stage}%</span>
+      `;
+      card.appendChild(stage);
+
+      const refStack = document.createElement('div');
+      refStack.className = 'stack';
+      refStack.innerHTML = `<div class="subtle">参考图 / 灵感记录</div>`;
+      refStack.appendChild(renderReferenceGallery(item, month, index));
+      const note = document.createElement('p');
+      note.className = 'note';
+      note.textContent = item.note || '暂未填写灵感记录。';
+      refStack.appendChild(note);
+      card.appendChild(refStack);
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+      const editBtn = document.createElement('button');
+      editBtn.className = 'ghost-btn';
+      editBtn.textContent = '编辑';
+      actions.appendChild(editBtn);
+      card.appendChild(actions);
+
+      const editPanel = document.createElement('div');
+      editPanel.className = 'edit-panel';
+      editPanel.innerHTML = `
+        <label class="muted-label">名称</label>
+        <input class="input" type="text" value="${item.title}" />
+        <label class="muted-label">Dead line</label>
+        <input class="input" type="date" value="${item.deadline}" />
+        <label class="muted-label">实时阶段（0-100）</label>
+        <input class="input" type="number" min="0" max="100" value="${item.stage}" />
+        <label class="muted-label">灵感记录 / 备注</label>
+        <textarea class="input" rows="2">${item.note || ''}</textarea>
+        <label class="muted-label">新增参考图（可选）</label>
+        <input class="input" type="url" placeholder="https://..." />
+        <div class="card-actions">
+          <button class="btn" type="button">保存</button>
+          <button class="ghost-btn" type="button">取消</button>
+        </div>
+      `;
+
+      const [titleInput, deadlineInput, stageInput, noteInput, refInput, saveBtn, cancelBtn] =
+        editPanel.querySelectorAll('input, textarea, button');
+
+      editBtn.addEventListener('click', () => {
+        editPanel.classList.toggle('active');
+      });
+
+      cancelBtn.addEventListener('click', () => {
+        editPanel.classList.remove('active');
+      });
+
+      saveBtn.addEventListener('click', () => {
+        const updated = manuscriptData[month][index];
+        updated.title = titleInput.value.trim() || updated.title;
+        updated.deadline = deadlineInput.value || getMonthEnd(month);
+        updated.stage = Math.max(0, Math.min(100, Number(stageInput.value) || updated.stage));
+        updated.note = noteInput.value.trim();
+        if (refInput.value.trim()) {
+          updated.reference.push(refInput.value.trim());
+        }
+        renderManuscripts(month);
+      });
+
+      card.appendChild(editPanel);
+      return card;
     }
 
     function renderManuscripts(month) {
@@ -480,28 +721,8 @@
         manuscriptContainer.innerHTML = '<p class="note">本月暂无稿件，添加新的计划吧。</p>';
         return;
       }
-      items.forEach((item) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="stack">
-            <h3>${item.title}</h3>
-            <div class="deadline">Dead line · ${item.deadline}</div>
-          </div>
-          <div class="stage">
-            <span>实时阶段</span>
-            <div class="progress"><span style="width:${item.stage}%"></span></div>
-            <span>${item.stage}%</span>
-          </div>
-          <div class="stack">
-            <div class="subtle">参考图 / 灵感记录</div>
-            <div class="gallery">
-              ${item.reference.map((src) => `<div class="thumb"><img src="${src}" alt="参考图" /></div>`).join('')}
-            </div>
-            <p class="note">${item.note}</p>
-          </div>
-        `;
-        manuscriptContainer.appendChild(card);
+      items.forEach((item, idx) => {
+        manuscriptContainer.appendChild(buildManuscriptCard(item, idx, month));
       });
     }
 
@@ -510,30 +731,138 @@
       records
         .slice()
         .sort((a, b) => b.date.localeCompare(a.date))
-        .forEach((record) => {
+        .forEach((record, index) => {
           const card = document.createElement('div');
           card.className = 'card';
-          card.innerHTML = `
-            <div class="tag">${record.date}</div>
-            <p class="note">${record.text}</p>
+          const tag = document.createElement('div');
+          tag.className = 'tag';
+          tag.textContent = record.date;
+          const text = document.createElement('p');
+          text.className = 'note';
+          text.textContent = record.text;
+          const actions = document.createElement('div');
+          actions.className = 'card-actions';
+          const editBtn = document.createElement('button');
+          editBtn.className = 'ghost-btn';
+          editBtn.textContent = '编辑';
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'ghost-btn';
+          deleteBtn.textContent = '删除';
+          actions.append(editBtn, deleteBtn);
+
+          const editPanel = document.createElement('div');
+          editPanel.className = 'edit-panel';
+          editPanel.innerHTML = `
+            <label class="muted-label">记录日期</label>
+            <input class="input" type="date" value="${record.date}" />
+            <label class="muted-label">想法描述</label>
+            <textarea class="input" rows="3">${record.text}</textarea>
+            <div class="card-actions">
+              <button class="btn" type="button">保存</button>
+              <button class="ghost-btn" type="button">取消</button>
+            </div>
           `;
+
+          const [dateInput, textInput, saveBtn, cancelBtn] = editPanel.querySelectorAll('input, textarea, button');
+
+          editBtn.addEventListener('click', () => editPanel.classList.toggle('active'));
+          cancelBtn.addEventListener('click', () => editPanel.classList.remove('active'));
+          saveBtn.addEventListener('click', () => {
+            records[index] = {
+              date: dateInput.value || record.date,
+              text: textInput.value.trim() || record.text
+            };
+            renderRecords();
+          });
+
+          deleteBtn.addEventListener('click', () => {
+            records.splice(index, 1);
+            renderRecords();
+          });
+
+          card.append(tag, text, actions, editPanel);
           recordContainer.appendChild(card);
         });
     }
 
+    function renderMindmapList(mindmap) {
+      const list = document.createElement('div');
+      list.className = 'mindmap';
+      if (!mindmap || !mindmap.length) {
+        list.innerHTML = '<p class="note">暂未添加思维导图。</p>';
+        return list;
+      }
+      const ul = document.createElement('ul');
+      mindmap.forEach((line) => {
+        const li = document.createElement('li');
+        li.textContent = line;
+        ul.appendChild(li);
+      });
+      list.appendChild(ul);
+      return list;
+    }
+
     function renderInspirations() {
       inspirationContainer.innerHTML = '';
-      inspirations.forEach((ins) => {
+      inspirations.forEach((ins, index) => {
         const card = document.createElement('div');
         card.className = 'card inspiration-card';
-        const hasImage = !!ins.image;
-        card.innerHTML = `
-          ${hasImage ? `<img src="${ins.image}" alt="灵感图" />` : ''}
-          <div class="body">
-            <h3>${ins.title}</h3>
-            <p class="note">${ins.text}</p>
+        if (ins.image) {
+          const img = document.createElement('img');
+          img.src = ins.image;
+          img.alt = '灵感图';
+          card.appendChild(img);
+        }
+        const body = document.createElement('div');
+        body.className = 'body';
+        body.innerHTML = `<h3>${ins.title}</h3><p class="note">${ins.text}</p>`;
+        body.appendChild(renderMindmapList(ins.mindmap));
+        card.appendChild(body);
+
+        const actions = document.createElement('div');
+        actions.className = 'card-actions';
+        const editBtn = document.createElement('button');
+        editBtn.className = 'ghost-btn';
+        editBtn.textContent = '编辑';
+        actions.appendChild(editBtn);
+        card.appendChild(actions);
+
+        const editPanel = document.createElement('div');
+        editPanel.className = 'edit-panel';
+        editPanel.innerHTML = `
+          <label class="muted-label">标题</label>
+          <input class="input" type="text" value="${ins.title}" />
+          <label class="muted-label">文字描述</label>
+          <textarea class="input" rows="3">${ins.text}</textarea>
+          <label class="muted-label">思维导图（每行一条）</label>
+          <textarea class="input" rows="3">${(ins.mindmap || []).join('\n')}</textarea>
+          <label class="muted-label">图片 URL</label>
+          <input class="input" type="url" value="${ins.image || ''}" />
+          <div class="card-actions">
+            <button class="btn" type="button">保存</button>
+            <button class="ghost-btn" type="button">取消</button>
           </div>
         `;
+
+        const [titleInput, textInput, mapInput, imgInput, saveBtn, cancelBtn] =
+          editPanel.querySelectorAll('input, textarea, button');
+
+        editBtn.addEventListener('click', () => editPanel.classList.toggle('active'));
+        cancelBtn.addEventListener('click', () => editPanel.classList.remove('active'));
+        saveBtn.addEventListener('click', () => {
+          inspirations[index] = {
+            title: titleInput.value.trim() || ins.title,
+            text: textInput.value.trim() || ins.text,
+            mindmap: (mapInput.value || '')
+              .split('\n')
+              .map((l) => l.trim())
+              .filter(Boolean),
+            image: imgInput.value.trim()
+          };
+          renderInspirations();
+        });
+
+        card.appendChild(editPanel);
         inspirationContainer.appendChild(card);
       });
     }
@@ -548,13 +877,55 @@
       e.target.reset();
     });
 
+    manuscriptForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const month = monthSelect.value;
+      ensureMonth(month);
+      const title = document.getElementById('manuscript-title').value.trim();
+      const deadline = document.getElementById('manuscript-deadline').value || getMonthEnd(month);
+      const stage = Math.max(0, Math.min(100, Number(document.getElementById('manuscript-stage').value) || 0));
+      const note = document.getElementById('manuscript-note').value.trim();
+      const ref = document.getElementById('manuscript-ref').value.trim();
+      if (!title) return;
+      const newItem = {
+        title,
+        deadline,
+        stage,
+        note,
+        reference: ref ? [ref] : []
+      };
+      manuscriptData[month].push(newItem);
+      renderManuscripts(month);
+      e.target.reset();
+      document.getElementById('manuscript-stage').value = 30;
+    });
+
+    monthAddForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const monthValue = monthInput.value;
+      if (!monthValue) return;
+      ensureMonth(monthValue);
+      renderMonthOptions(monthValue);
+      renderManuscripts(monthValue);
+      monthInput.value = '';
+    });
+
     document.getElementById('inspiration-form').addEventListener('submit', (e) => {
       e.preventDefault();
       const title = document.getElementById('inspiration-title').value.trim();
       const text = document.getElementById('inspiration-text').value.trim();
+      const map = document.getElementById('inspiration-map').value;
       const image = document.getElementById('inspiration-image').value.trim();
       if (!title || !text) return;
-      inspirations.unshift({ title, text, image });
+      inspirations.unshift({
+        title,
+        text,
+        image,
+        mindmap: (map || '')
+          .split('\n')
+          .map((l) => l.trim())
+          .filter(Boolean)
+      });
       renderInspirations();
       e.target.reset();
     });
@@ -564,7 +935,8 @@
     });
 
     // 初始化
-    renderMonthOptions();
+    ensureMonth(months[months.length - 1]);
+    renderMonthOptions(months[months.length - 1]);
     renderManuscripts(monthSelect.value);
     renderRecords();
     renderInspirations();
