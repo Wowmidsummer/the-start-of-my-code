@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画画记录网站 | Brush & Pixel</title>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --primary: #3f51b5;
+      --accent: #ffc107;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow: 0 10px 30px rgba(31, 41, 55, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(246, 247, 251, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .brand .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #7c4dff);
+      box-shadow: 0 4px 12px rgba(63, 81, 181, 0.35);
+    }
+
+    .nav {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+
+    .nav a:hover {
+      color: var(--primary);
+      background: rgba(63, 81, 181, 0.08);
+    }
+
+    main {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .pill {
+      background: #eef2ff;
+      color: var(--primary);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .gallery {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(31, 41, 55, 0.12);
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .deadline {
+      color: var(--primary);
+    }
+
+    .progress {
+      position: relative;
+      height: 8px;
+      width: 100%;
+      background: #eef2ff;
+      border-radius: 999px;
+      margin: 10px 0 12px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 68%;
+      background: linear-gradient(90deg, var(--primary), #7c4dff);
+      border-radius: inherit;
+    }
+
+    .progress-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .ref-thumb {
+      height: 90px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ref-thumb::after {
+      content: "参考";
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+    }
+
+    .note {
+      background: #f9fafb;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .record-card .date-tag {
+      display: inline-block;
+      background: #ecfeff;
+      color: #0ea5e9;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .record-card h3 {
+      margin: 4px 0 6px;
+      font-size: 18px;
+    }
+
+    .record-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .inline-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .inline-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #b45309;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .cover {
+      height: 160px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .text-card p { margin: 0; }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px 0 10px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      main { padding: 24px 16px 48px; }
+      h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><span class="dot"></span>Brush & Pixel Studio</div>
+    <nav class="nav">
+      <a href="#drafts">稿件区块</a>
+      <a href="#records">记录区块</a>
+      <a href="#ideas">灵感区块</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="drafts">
+      <div class="section-header">
+        <h2>稿件区块 · 月度规划</h2>
+        <span class="pill">本月专注 · 交付节奏</span>
+      </div>
+      <div class="grid gallery">
+        <article class="card">
+          <div class="tag-row">
+            <span class="tag">2025 · 一月</span>
+            <span class="tag deadline">Dead line：1月28日</span>
+            <span class="tag">角色插画 · 客户A</span>
+          </div>
+          <div class="progress-label">
+            <span>实时阶段：细化线稿</span>
+            <span>完成度 68%</span>
+          </div>
+          <div class="progress" aria-label="完成进度"><span></span></div>
+          <div class="ref-grid">
+            <div class="ref-thumb" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="ref-thumb" style="background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="ref-thumb" style="background-image:url('https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80');"></div>
+          </div>
+          <div class="note">灵感记录：想把主光源做成柔和的霓虹，背景留大面积呼吸空间，强调人物的轮廓光。</div>
+        </article>
+
+        <article class="card">
+          <div class="tag-row">
+            <span class="tag">2025 · 二月</span>
+            <span class="tag deadline">Dead line：2月12日</span>
+            <span class="tag">建筑场景 · 客户B</span>
+          </div>
+          <div class="progress-label">
+            <span>实时阶段：色稿/材质测试</span>
+            <span>完成度 42%</span>
+          </div>
+          <div class="progress" aria-label="完成进度"><span style="width:42%"></span></div>
+          <div class="ref-grid">
+            <div class="ref-thumb" style="background-image:url('https://images.unsplash.com/photo-1529429617124-aee1f1650a5c?auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="ref-thumb" style="background-image:url('https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=800&q=80');"></div>
+            <div class="ref-thumb" style="background-image:url('https://images.unsplash.com/photo-1473862170184-862ab08aae5b?auto=format&fit=crop&w=800&q=80');"></div>
+          </div>
+          <div class="note">灵感记录：玻璃反射要控制曝光，材质混合想试试冷暖对撞；前景加些模糊的绿植遮挡。</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="records">
+      <div class="section-header">
+        <h2>记录区块 · 日常想法</h2>
+        <span class="pill">按日期记录</span>
+      </div>
+      <div class="grid gallery">
+        <article class="card record-card">
+          <span class="date-tag">12 · 28</span>
+          <h3>小动物组画</h3>
+          <p>尝试把猫和鸟的互动做成连环短篇，用柔焦和颗粒感营造胶片味道。</p>
+          <div class="inline-list">
+            <span class="inline-chip">色调：柔粉/薄荷绿</span>
+            <span class="inline-chip">材质：水彩+色铅</span>
+          </div>
+        </article>
+
+        <article class="card record-card">
+          <span class="date-tag">01 · 03</span>
+          <h3>科幻街景</h3>
+          <p>夜景霓虹+雨地反光，远景用体积光带出层次，人物剪影保持简洁。</p>
+          <div class="inline-list">
+            <span class="inline-chip">关键词：霓虹 / 雨夜 / 体积光</span>
+          </div>
+        </article>
+
+        <article class="card record-card">
+          <span class="date-tag">01 · 05</span>
+          <h3>儿童绘本封面</h3>
+          <p>柔和的曲线排版，角色动作夸张，留出标题区域，色块对比不要太强。</p>
+          <div class="inline-list">
+            <span class="inline-chip">风格：gouache</span>
+            <span class="inline-chip">情绪：温暖</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="ideas">
+      <div class="section-header">
+        <h2>灵感区块 · Notion 画廊风格</h2>
+        <span class="pill">文字 & 图片</span>
+      </div>
+      <div class="grid gallery">
+        <article class="card text-card">
+          <div class="cover" style="background-image:url('https://images.unsplash.com/photo-1487412912498-0447578fcca8?auto=format&fit=crop&w=1000&q=80');"></div>
+          <h3>光影实验</h3>
+          <p>尝试用单一光源塑造情绪，背景保持极简，人物边缘加霓虹色 rim light。</p>
+        </article>
+
+        <article class="card text-card">
+          <div class="cover" style="background-image:url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80');"></div>
+          <h3>蓝调城市</h3>
+          <p>冷蓝主色调，点缀橙色窗灯，整张画保持夜晚安静的氛围。</p>
+        </article>
+
+        <article class="card text-card">
+          <div class="cover" style="background-image:url('https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1000&q=80');"></div>
+          <h3>植物手帐</h3>
+          <p>用笔刷纹理描绘叶片，搭配轻量的手写字体，像自然标本的展示。</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>设计师的画画记录 · 保持灵感流动 ✦</footer>
+</body>
+</html>
