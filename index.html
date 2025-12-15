@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>画画记录网站 | Brush & Pixel</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --accent: #6b5bff;
+      --accent-2: #ff8a5c;
+      --border: #e5e7eb;
+      --shadow: 0 10px 30px rgba(31, 41, 51, 0.12);
+      --radius: 18px;
+      --gap: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 20%, #f0f4ff, #f7f8fb 45%),
+        radial-gradient(circle at 80% 10%, #fff2ec, transparent 35%),
+        var(--bg);
+      font-family: 'Inter', 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont,
+        'Segoe UI', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 6vw 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6b5bff, #8ec5fc);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 22px;
+      font-weight: 800;
+      box-shadow: var(--shadow);
+    }
+
+    nav {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--muted);
+      padding: 10px 14px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+
+    nav a:hover,
+    nav a:focus {
+      color: var(--text);
+      background: rgba(107, 91, 255, 0.08);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 26px;
+      padding: 0 6vw 40px;
+    }
+
+    .section {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 22px 22px 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .section h2 {
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+    }
+
+    .pill {
+      background: rgba(107, 91, 255, 0.08);
+      color: #4b3de2;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .meta-line {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--gap);
+    }
+
+    .card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), #fff);
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, rgba(107, 91, 255, 0.08), rgba(255, 255, 255, 0.2));
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .card:hover::after {
+      opacity: 1;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .deadline {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .stage {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      background: #eef1f7;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #6b5bff, #8ec5fc);
+    }
+
+    .tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      background: rgba(255, 138, 92, 0.12);
+      color: #ed7134;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .thumb {
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 4 / 3;
+      background: #e5e7eb;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .form {
+      margin-top: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .form label {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .input, textarea, select {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      font-size: 14px;
+      background: #fff;
+      font-family: inherit;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(107, 91, 255, 0.18);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #6b5bff, #8ec5fc);
+      color: #fff;
+      border: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(107, 91, 255, 0.25);
+    }
+
+    .stack {
+      display: grid;
+      gap: 6px;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .inspiration-card {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .inspiration-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .inspiration-card .body {
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    @media (max-width: 980px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-icon">✏️</div>
+      <div>
+        <div>Brush & Pixel Studio</div>
+        <div class="subtle">画画记录 · 灵感管理</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#manuscript">稿件区块</a>
+      <a href="#records">记录区块</a>
+      <a href="#inspiration">灵感区块</a>
+    </nav>
+  </header>
+
+  <div class="main-grid">
+    <section id="manuscript" class="section">
+      <div class="meta-line">
+        <h2>稿件区块</h2>
+        <span class="pill">按月管理</span>
+      </div>
+      <div class="meta-line">
+        <label for="month-select">当前月份</label>
+        <select id="month-select" class="input" aria-label="选择月份"></select>
+      </div>
+      <div id="manuscript-cards" class="cards-grid"></div>
+    </section>
+
+    <div class="section">
+      <section id="records">
+        <div class="meta-line">
+          <h2>记录区块</h2>
+          <span class="pill">每日灵感卡片</span>
+        </div>
+        <div id="record-cards" class="cards-grid" style="margin-bottom:14px;"></div>
+        <form id="record-form" class="form" autocomplete="off">
+          <div class="stack">
+            <label for="record-date">记录日期</label>
+            <input id="record-date" class="input" type="date" required />
+          </div>
+          <div class="stack">
+            <label for="record-idea">想法描述</label>
+            <textarea id="record-idea" rows="3" required placeholder="简要记录你的绘画想法、素材来源或难点"></textarea>
+          </div>
+          <button class="btn" type="submit">添加记录</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <section id="inspiration" class="section" style="margin:0 6vw 60px;">
+    <div class="meta-line">
+      <h2>灵感区块</h2>
+      <span class="pill">Notion 画廊式</span>
+    </div>
+    <div id="inspiration-cards" class="cards-grid" style="margin-bottom:14px;"></div>
+    <form id="inspiration-form" class="form" autocomplete="off">
+      <div class="stack">
+        <label for="inspiration-title">灵感标题</label>
+        <input id="inspiration-title" class="input" placeholder="例如：暖色调的雨夜街景" required />
+      </div>
+      <div class="stack">
+        <label for="inspiration-text">文字描述</label>
+        <textarea id="inspiration-text" rows="3" required placeholder="记录灵感来源、色彩方案、情绪关键词"></textarea>
+      </div>
+      <div class="stack">
+        <label for="inspiration-image">图片 URL（可选）</label>
+        <input id="inspiration-image" class="input" placeholder="https://..." />
+      </div>
+      <button class="btn" type="submit">添加灵感</button>
+    </form>
+  </section>
+
+  <script>
+    // 初始数据
+    const months = [
+      '2024-11', '2024-12', '2025-01', '2025-02'
+    ];
+
+    const manuscriptData = {
+      '2024-12': [
+        {
+          title: '冬季主题封面',
+          deadline: '2024-12-18',
+          stage: 70,
+          reference: [
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80',
+            'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=600&q=80'
+          ],
+          note: '尝试冷暖对比，人物暖光，背景偏冷灰。'
+        },
+        {
+          title: '童话插画 - 雨林探险',
+          deadline: '2024-12-26',
+          stage: 45,
+          reference: [
+            'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=600&q=80'
+          ],
+          note: '主体是树屋与雾，考虑水汽质感和高低差。'
+        }
+      ],
+      '2025-01': [
+        {
+          title: '科幻城市夜景',
+          deadline: '2025-01-12',
+          stage: 25,
+          reference: [
+            'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80'
+          ],
+          note: '霓虹反射、雨感、层次需要加强。'
+        }
+      ],
+      '2025-02': []
+    };
+
+    const records = [
+      { date: '2024-12-02', text: '想画一组风向实验，利用渐变和颗粒。' },
+      { date: '2024-12-04', text: '低饱和蓝绿色做雾面，加入一点金属质感。' },
+      { date: '2024-12-05', text: '尝试把人物放在极小角落，留大块天空。' }
+    ];
+
+    const inspirations = [
+      {
+        title: '雨夜港口',
+        text: '灯光反射，地面有少许积水，氛围安静。',
+        image: 'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        title: '玻璃温室',
+        text: '逆光＋薄雾，叶片高光与冷色窗框对比。',
+        image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80'
+      },
+      {
+        title: '布料褶皱研究',
+        text: '多做快速草图，记录不同布料的折射感。',
+        image: ''
+      }
+    ];
+
+    const monthSelect = document.getElementById('month-select');
+    const manuscriptContainer = document.getElementById('manuscript-cards');
+    const recordContainer = document.getElementById('record-cards');
+    const inspirationContainer = document.getElementById('inspiration-cards');
+
+    function formatMonthLabel(value) {
+      const [y, m] = value.split('-');
+      return `${y}年${m}月`;
+    }
+
+    function renderMonthOptions() {
+      months.forEach((m) => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = formatMonthLabel(m);
+        monthSelect.appendChild(opt);
+      });
+      monthSelect.value = months[1];
+    }
+
+    function renderManuscripts(month) {
+      manuscriptContainer.innerHTML = '';
+      const items = manuscriptData[month] || [];
+      if (!items.length) {
+        manuscriptContainer.innerHTML = '<p class="note">本月暂无稿件，添加新的计划吧。</p>';
+        return;
+      }
+      items.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="stack">
+            <h3>${item.title}</h3>
+            <div class="deadline">Dead line · ${item.deadline}</div>
+          </div>
+          <div class="stage">
+            <span>实时阶段</span>
+            <div class="progress"><span style="width:${item.stage}%"></span></div>
+            <span>${item.stage}%</span>
+          </div>
+          <div class="stack">
+            <div class="subtle">参考图 / 灵感记录</div>
+            <div class="gallery">
+              ${item.reference.map((src) => `<div class="thumb"><img src="${src}" alt="参考图" /></div>`).join('')}
+            </div>
+            <p class="note">${item.note}</p>
+          </div>
+        `;
+        manuscriptContainer.appendChild(card);
+      });
+    }
+
+    function renderRecords() {
+      recordContainer.innerHTML = '';
+      records
+        .slice()
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .forEach((record) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <div class="tag">${record.date}</div>
+            <p class="note">${record.text}</p>
+          `;
+          recordContainer.appendChild(card);
+        });
+    }
+
+    function renderInspirations() {
+      inspirationContainer.innerHTML = '';
+      inspirations.forEach((ins) => {
+        const card = document.createElement('div');
+        card.className = 'card inspiration-card';
+        const hasImage = !!ins.image;
+        card.innerHTML = `
+          ${hasImage ? `<img src="${ins.image}" alt="灵感图" />` : ''}
+          <div class="body">
+            <h3>${ins.title}</h3>
+            <p class="note">${ins.text}</p>
+          </div>
+        `;
+        inspirationContainer.appendChild(card);
+      });
+    }
+
+    document.getElementById('record-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = document.getElementById('record-date').value;
+      const text = document.getElementById('record-idea').value.trim();
+      if (!date || !text) return;
+      records.push({ date, text });
+      renderRecords();
+      e.target.reset();
+    });
+
+    document.getElementById('inspiration-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('inspiration-title').value.trim();
+      const text = document.getElementById('inspiration-text').value.trim();
+      const image = document.getElementById('inspiration-image').value.trim();
+      if (!title || !text) return;
+      inspirations.unshift({ title, text, image });
+      renderInspirations();
+      e.target.reset();
+    });
+
+    monthSelect.addEventListener('change', (e) => {
+      renderManuscripts(e.target.value);
+    });
+
+    // 初始化
+    renderMonthOptions();
+    renderManuscripts(monthSelect.value);
+    renderRecords();
+    renderInspirations();
+  </script>
+</body>
+</html>
