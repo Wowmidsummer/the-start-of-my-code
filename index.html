@@ -375,6 +375,10 @@
       padding: 10px;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .mindmap ul {
       margin: 0;
       padding-left: 18px;
@@ -423,8 +427,14 @@
           <input id="month-input" class="input" type="month" required />
           <button class="btn" type="submit">添加</button>
         </form>
+        <button id="toggle-manuscript-form" class="btn" type="button">新建稿件</button>
       </div>
-      <form id="manuscript-form" class="form" autocomplete="off" style="margin-bottom:12px;">
+      <form
+        id="manuscript-form"
+        class="form hidden"
+        autocomplete="off"
+        style="margin-bottom:12px;"
+      >
         <div class="stack">
           <label for="manuscript-title">稿件名称</label>
           <input id="manuscript-title" class="input" placeholder="例如：冬季主题封面" required />
@@ -574,6 +584,7 @@
     const monthInput = document.getElementById('month-input');
     const monthAddForm = document.getElementById('month-add-form');
     const manuscriptForm = document.getElementById('manuscript-form');
+    const toggleManuscriptFormBtn = document.getElementById('toggle-manuscript-form');
 
     function formatMonthLabel(value) {
       const [y, m] = value.split('-');
@@ -592,6 +603,16 @@
       }
       months.sort((a, b) => a.localeCompare(b));
       if (!manuscriptData[month]) manuscriptData[month] = [];
+    }
+
+    function setManuscriptFormVisible(isVisible) {
+      if (isVisible) {
+        manuscriptForm.classList.remove('hidden');
+        if (toggleManuscriptFormBtn) toggleManuscriptFormBtn.textContent = '收起稿件表单';
+      } else {
+        manuscriptForm.classList.add('hidden');
+        if (toggleManuscriptFormBtn) toggleManuscriptFormBtn.textContent = '新建稿件';
+      }
     }
 
     function renderMonthOptions(selectedValue) {
@@ -898,6 +919,7 @@
       renderManuscripts(month);
       e.target.reset();
       document.getElementById('manuscript-stage').value = 30;
+      setManuscriptFormVisible(false);
     });
 
     monthAddForm.addEventListener('submit', (e) => {
@@ -909,6 +931,13 @@
       renderManuscripts(monthValue);
       monthInput.value = '';
     });
+
+    if (toggleManuscriptFormBtn) {
+      toggleManuscriptFormBtn.addEventListener('click', () => {
+        const isVisible = !manuscriptForm.classList.contains('hidden');
+        setManuscriptFormVisible(!isVisible);
+      });
+    }
 
     document.getElementById('inspiration-form').addEventListener('submit', (e) => {
       e.preventDefault();
