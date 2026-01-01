@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>番茄钟 | 专注工具</title>
+  <title>番茄钟 | 横板专注</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -14,128 +14,99 @@
   <div class="page-shell">
     <header class="brand-area">
       <div class="brand-text">POMODORO</div>
-      <div class="brand-sub">番茄钟专注界面</div>
+      <div class="brand-sub">横板番茄钟 · 保留旧图表与可编辑任务</div>
     </header>
 
-    <main class="main-column">
-      <section class="timer-block card">
-        <div class="section-title">计时器</div>
-        <div class="timer-visual">
-          <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
-            <circle class="ring-base" cx="110" cy="110" r="102" />
-            <circle class="ring-progress" cx="110" cy="110" r="102" />
-          </svg>
-          <div class="timer-center">
-            <div class="time-display" id="time-display">25:00</div>
-            <div class="time-sub" id="time-status">下一个：休息 5 分钟</div>
+    <main class="board">
+      <section class="card timer-card">
+        <div class="card-head">
+          <div class="section-title">计时器</div>
+          <div class="mode-switch" role="tablist">
+            <button class="pill-btn active" data-mode="pomodoro" role="tab">倒计时</button>
+            <button class="pill-btn" data-mode="stopwatch" role="tab">正计时</button>
           </div>
         </div>
+
+        <div class="timer-row">
+          <div class="timer-visual">
+            <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+              <circle class="ring-base" cx="110" cy="110" r="102" />
+              <circle class="ring-progress" cx="110" cy="110" r="102" />
+            </svg>
+            <div class="timer-center">
+              <div class="time-display" id="time-display">25:00</div>
+              <div class="time-sub" id="time-status">下一个：休息 5 分钟</div>
+            </div>
+          </div>
+          <div class="timer-meta">
+            <div class="meta-block">
+              <div class="meta-label">当前模式</div>
+              <div class="meta-value" id="mode-label">倒计时</div>
+            </div>
+            <div class="meta-block">
+              <div class="meta-label">目标时长</div>
+              <div class="meta-value"><input id="count-input" type="number" min="1" max="120" value="25" /> 分钟</div>
+              <div class="meta-hint">仅倒计时生效</div>
+            </div>
+            <div class="meta-block">
+              <div class="meta-label">正计时</div>
+              <div class="meta-value" id="stopwatch-read">00:00</div>
+              <div class="meta-hint">用于累计练习</div>
+            </div>
+          </div>
+        </div>
+
         <div class="controls">
           <button class="ghost-btn" id="start-btn">开始</button>
           <button class="ghost-btn" id="pause-btn">暂停</button>
+          <button class="ghost-btn" id="reset-btn">重置</button>
         </div>
       </section>
 
-      <section class="tasks card">
-        <div class="section-title">今日任务</div>
-        <ul class="task-list">
-          <li class="task-item">
-            <div class="task-left">
-              <span class="task-dot" aria-hidden="true"></span>
-              <div class="task-text">
-                <div class="task-name">项目：深度专注</div>
-                <div class="task-note">预计 1 番茄</div>
-              </div>
-            </div>
-            <button class="icon-btn" aria-label="开始任务">
-              <span class="icon-play"></span>
-            </button>
-          </li>
-          <li class="task-item">
-            <div class="task-left">
-              <span class="task-dot" aria-hidden="true"></span>
-              <div class="task-text">
-                <div class="task-name">文档整理</div>
-                <div class="task-note">预计 2 番茄</div>
-              </div>
-            </div>
-            <button class="icon-btn" aria-label="开始任务">
-              <span class="icon-play"></span>
-            </button>
-          </li>
-          <li class="task-item">
-            <div class="task-left">
-              <span class="task-dot" aria-hidden="true"></span>
-              <div class="task-text">
-                <div class="task-name">方案复盘</div>
-                <div class="task-note">预计 1 番茄</div>
-              </div>
-            </div>
-            <button class="icon-btn" aria-label="开始任务">
-              <span class="icon-play"></span>
-            </button>
-          </li>
-          <li class="task-item">
-            <div class="task-left">
-              <span class="task-dot" aria-hidden="true"></span>
-              <div class="task-text">
-                <div class="task-name">阅读笔记</div>
-                <div class="task-note">预计 1 番茄</div>
-              </div>
-            </div>
-            <button class="icon-btn" aria-label="开始任务">
-              <span class="icon-play"></span>
-            </button>
-          </li>
-        </ul>
+      <section class="card tasks-card">
+        <div class="card-head">
+          <div class="section-title">今日任务</div>
+          <div class="task-actions">
+            <button class="pill-btn light" id="add-task">新增任务</button>
+          </div>
+        </div>
+        <ul class="task-list" id="task-list"></ul>
       </section>
 
-      <section class="stats card">
+      <section class="card stats-card">
         <div class="section-title">专注统计</div>
         <div class="stats-grid">
           <div class="stat-summary">
             <div class="summary-item">
               <div class="summary-label">完成番茄</div>
-              <div class="summary-value">6</div>
+              <div class="summary-value" id="done-count">6</div>
               <div class="summary-note">今日累计</div>
             </div>
             <div class="summary-item">
               <div class="summary-label">专注时长</div>
-              <div class="summary-value">3.0h</div>
+              <div class="summary-value" id="focus-hours">3.0h</div>
               <div class="summary-note">含短休息</div>
             </div>
             <div class="summary-item">
               <div class="summary-label">完成率</div>
-              <div class="summary-value">100%</div>
+              <div class="summary-value" id="finish-rate">100%</div>
               <div class="summary-note">计划 vs 实际</div>
             </div>
           </div>
           <div class="stat-charts">
             <div class="chart-block">
               <div class="chart-title">过去 7 天</div>
-              <div class="bar-chart" aria-hidden="true">
-                <div class="bar" style="height: 28%"></div>
-                <div class="bar" style="height: 34%"></div>
-                <div class="bar" style="height: 48%"></div>
-                <div class="bar" style="height: 60%"></div>
-                <div class="bar" style="height: 46%"></div>
-                <div class="bar" style="height: 72%"></div>
-                <div class="bar" style="height: 90%"></div>
-              </div>
+              <div class="bar-chart" id="bar-chart" aria-hidden="true"></div>
               <div class="chart-axis" aria-hidden="true">
                 <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
               </div>
             </div>
             <div class="chart-block">
               <div class="chart-title">今日饼图（保留）</div>
-              <div class="donut" aria-hidden="true">
+              <div class="donut" id="donut" aria-hidden="true">
                 <div class="donut-core"></div>
               </div>
-              <div class="donut-legend">
-                <span><span class="dot a"></span>任务 A</span>
-                <span><span class="dot b"></span>任务 B</span>
-                <span><span class="dot c"></span>任务 C</span>
-              </div>
+              <div class="donut-legend" id="donut-legend"></div>
             </div>
           </div>
         </div>
