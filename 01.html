@@ -399,6 +399,16 @@
             padding: 9px 10px 8px;
             font-size: 11px;
             box-shadow: 0 0 0 2px #000 inset;
+            font-family: 'Press Start 2P', 'Share Tech Mono', 'Noto Sans SC', monospace;
+            letter-spacing: 0.6px;
+        }
+        td input[readonly] {
+            background: #f4efe3;
+            cursor: default;
+        }
+        .table-row-editing td input {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent) inset;
         }
         .task-time-input {
             min-width: 110px;
@@ -985,8 +995,29 @@
             renderTable();
         }
 
+        function findRowByName(name) {
+            return Array.from(taskTable.querySelectorAll('tr[data-name]')).find(row => row.dataset.name === name);
+        }
+
+        function setRowEditable(row, editable) {
+            if (!row) return;
+            row.classList.toggle('table-row-editing', editable);
+            row.dataset.editing = editable ? 'true' : 'false';
+            row.querySelectorAll('input').forEach(input => {
+                input.readOnly = !editable;
+            });
+            const editBtn = row.querySelector('[data-action="edit"]');
+            if (editBtn) editBtn.textContent = editable ? '保存' : '修改';
+            if (editable) {
+                const timeInput = row.querySelector('.task-time-input');
+                (timeInput || row.querySelector('input'))?.focus();
+            }
+        }
+
         function commitNameChange(target) {
             if (!target.classList.contains('task-name-input')) return;
+            const row = target.closest('tr');
+            if (row?.dataset.editing !== 'true') return;
             const oldName = target.dataset.name;
             const newName = target.value;
             if (oldName !== newName) renameTask(oldName, newName);
@@ -994,6 +1025,8 @@
 
         function commitTimeChange(target) {
             if (!target.classList.contains('task-time-input')) return;
+            const row = target.closest('tr');
+            if (row?.dataset.editing !== 'true') return;
             const name = target.dataset.name;
             const original = Number(target.dataset.seconds) || 0;
             const parsed = parseTimeInput(target.value);
@@ -1179,11 +1212,11 @@
                 const percent = total ? Math.round((sec / total) * 100) : 0;
                 return `
                     <tr data-name="${name}">
-                        <td><input class="task-name-input" data-name="${name}" value="${name}" aria-label="编辑任务名称" /></td>
-                        <td><input class="task-time-input" data-name="${name}" data-seconds="${sec}" value="${fmtRecordTime(sec)}" aria-label="编辑任务时长" /></td>
+                        <td><input class="task-name-input" data-name="${name}" value="${name}" aria-label="编辑任务名称" readonly /></td>
+                        <td><input class="task-time-input" data-name="${name}" data-seconds="${sec}" value="${fmtRecordTime(sec)}" aria-label="编辑任务时长" readonly /></td>
                         <td>${percent}%</td>
                         <td><div class="progress"><span style="width:${percent}%;"></span></div></td>
-                        <td><div class="table-actions"><button class="action-btn" data-action="delete" data-name="${name}">删除</button></div></td>
+                        <td><div class="table-actions"><button class="action-btn" data-action="edit" data-name="${name}">修改</button><button class="action-btn" data-action="delete" data-name="${name}">删除</button></div></td>
                     </tr>`;
             }).join('');
             taskTable.innerHTML = `
@@ -1341,6 +1374,18 @@
                 }
             });
             taskTable.addEventListener('click', (e) => {
+                if (e.target.dataset.action === 'edit') {
+                    const name = e.target.dataset.name;
+                    const row = findRowByName(name);
+                    const nowEditing = row?.dataset.editing === 'true';
+                    if (nowEditing) {
+                        commitNameChange(row.querySelector('.task-name-input'));
+                        commitTimeChange(row.querySelector('.task-time-input'));
+                        setRowEditable(row, false);
+                    } else {
+                        setRowEditable(row, true);
+                    }
+                }
                 if (e.target.dataset.action === 'delete') {
                     deleteTask(e.target.dataset.name);
                 }
